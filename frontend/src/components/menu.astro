@@ -1,0 +1,548 @@
+---
+
+---
+
+<nav>
+    <div class="wrapper">
+      <div class="logo"><img src="../src/layouts/ALT_LogoLoRaVIEW.png" alt="LoRaVIEW"></div>
+      <input type="radio" name="slider" id="menu-btn">
+      <input type="radio" name="slider" id="close-btn">
+      <ul class="nav-links">
+        <label for="close-btn" class="btn close-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="white" viewBox="0 0 24 24">
+                <path d="M6 6l12 12M6 18L18 6" stroke="white" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+        </label>
+        <li><a href="/">Inicio</a></li>
+        <li>
+          <button id="theme-toggle" class="theme-toggle" aria-pressed="false" aria-label="Cambiar a modo oscuro" style="margin-top: 1.1rem;">
+            <!-- Sol -->
+            <svg class="icon-sun" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="2"/>
+              <path d="M12 1v3M12 20v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M1 12h3M20 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            <!-- Luna -->
+            <svg class="icon-moon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" stroke="currentColor" stroke-width="2" fill="none"/>
+            </svg>
+          </button>
+        </li>
+        <li>
+          <a href="#" class="desktop-item">Documentación</a>
+          <input type="checkbox" id="showDrop">
+          <label for="showDrop" class="mobile-item">Documentación</label>
+          <ul class="drop-menu" style="width: 100%;">
+            <li><a href="/documentacion/introduccion">Introducción</a></li>
+            <li><a href="/documentacion/funcionamiento">Funcionamiento</a></li>
+            <li><a href="/documentacion/faq">Preguntas Frecuentes</a></li>
+            <li><a href="/documentacion/manual">Manual de Usuario</a></li>
+          </ul>
+        </li>
+        <li>
+          <a href="#" class="desktop-item">Herramientas</a>
+          <input type="checkbox" id="showMega">
+          <label for="showMega" class="mobile-item">Herramientas</label>
+          <div class="mega-box">
+            <div class="content">
+              <div class="row">
+                <img src="/src/layouts/LoRaREAL.jpeg" alt="Arte Simulación LoRa">
+              </div>
+              <div class="row">
+                <header>LoRa<span  style="color: #f4841c;">MAP</span></header>
+                <ul class="mega-links">
+                  <li><a href="#">Puertas de Acceso</a></li>
+                  <li><a href="#">Configuración de Red</a></li>
+                  <li><a href="#">Redes LoRa</a></li>
+                </ul>
+              </div>
+              <div class="row">
+                <img src="/src/layouts/Lorasonda.jpeg" alt="Arte de sonda LoRa">
+              </div>
+              <div class="row">
+                <header>LoRa<span  style="color: #f4841c;">TRACK</span></header>
+                <ul class="mega-links">
+                  <li><a href="#">Datos Reales</a></li>
+                  <li><a href="#">Añadir Datos</a></li>
+                  <li><a href="#">Comparar Datos</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </li>
+        <li><a data-bs-toggle="modal" data-bs-target="#exampleModal"><img src="/src/layouts/usuario.png" alt="User" style="width: 2.5rem;"></a></li>
+        </ul>
+        <label for="menu-btn" class="btn menu-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="white" viewBox="0 0 24 24">
+                <path d="M4 6h16M4 12h16M4 18h16" stroke="white" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+        </label>
+    </div>
+  </nav>
+<script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    if (!btn) return;
+
+    const root = document.documentElement;
+    const prefers = window.matchMedia('(prefers-color-scheme: dark)');
+
+    function apply(theme, persist = true) {
+      root.setAttribute('data-theme', theme);
+      root.style.colorScheme = theme === 'dark' ? 'dark' : 'light';
+      if (persist) localStorage.setItem('theme', theme);
+      btn.setAttribute('aria-pressed', theme === 'dark' ? 'true' : 'false');
+      btn.setAttribute('aria-label', theme === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro');
+    }
+
+    // Estado inicial coherente con el aplicado en <head>
+    const current = root.getAttribute('data-theme') || (prefers.matches ? 'dark' : 'light');
+    apply(current, false);
+
+    btn.addEventListener('click', () => {
+      const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      apply(next);
+    });
+
+    // Si el usuario NO ha elegido (sin localStorage), seguir el sistema
+    prefers.addEventListener('change', (e) => {
+      if (!localStorage.getItem('theme')) apply(e.matches ? 'dark' : 'light', false);
+    });
+  })();
+</script>
+
+<script>
+(function () {
+  const nav = document.querySelector('nav');
+  if (!nav) return;
+
+  const mqDesktop = window.matchMedia('(min-width: 971px)');
+
+  // Mapea cada checkbox con su panel
+  const items = [
+    { input: nav.querySelector('#showDrop'), panel: nav.querySelector('.drop-menu')  },
+    { input: nav.querySelector('#showMega'), panel: nav.querySelector('.mega-box')   }
+  ].filter(Boolean);
+
+  // Utilidades de animación (altura auto -> height animable)
+  function openPanel(panel) {
+    if (!panel) return;
+    panel.classList.add('open');
+    panel.style.maxHeight = panel.scrollHeight + 'px';
+    const tidy = () => {
+      // Al terminar, fijamos a 'none' para permitir contenido variable
+      if (panel.classList.contains('open')) panel.style.maxHeight = 'none';
+      panel.removeEventListener('transitionend', tidy);
+    };
+    panel.addEventListener('transitionend', tidy);
+  }
+
+  function closePanel(panel) {
+    if (!panel) return;
+    // Si estaba en auto, fijar a valor real para animar hacia 0
+    if (getComputedStyle(panel).maxHeight === 'none') {
+      panel.style.maxHeight = panel.scrollHeight + 'px';
+    }
+    requestAnimationFrame(() => {
+      panel.style.maxHeight = '0px';
+      const tidy = () => {
+        panel.classList.remove('open');
+        panel.removeEventListener('transitionend', tidy);
+      };
+      panel.addEventListener('transitionend', tidy);
+    });
+  }
+
+  function closeAll(exceptInput) {
+    items.forEach(({ input, panel }) => {
+      if (input !== exceptInput) {
+        input.checked = false;
+        closePanel(panel);
+      }
+    });
+  }
+
+  // En móvil: al cambiar un checkbox, abre su panel y cierra el otro
+  items.forEach(({ input, panel }) => {
+    if (!input || !panel) return;
+
+    input.addEventListener('change', () => {
+      if (mqDesktop.matches) return; // En desktop manda :hover
+      if (input.checked) {
+        closeAll(input);
+        openPanel(panel);
+      } else {
+        closePanel(panel);
+      }
+    });
+  });
+
+  // Cerrar submenús al cerrar el menú lateral (si usas #close-btn)
+  const closeMenuRadio = nav.querySelector('#close-btn');
+  if (closeMenuRadio) {
+    closeMenuRadio.addEventListener('change', () => {
+      if (closeMenuRadio.checked) closeAll(null);
+    });
+  }
+
+  // Clic fuera del nav: cierra submenús en móvil
+  document.addEventListener('click', (e) => {
+    if (mqDesktop.matches) return;
+    if (!nav.contains(e.target)) closeAll(null);
+  });
+
+  // ESC para cerrar en móvil
+  document.addEventListener('keydown', (e) => {
+    if (mqDesktop.matches) return;
+    if (e.key === 'Escape') closeAll(null);
+  });
+
+  // Al pasar a desktop, limpiamos estilos inline dejados por la animación
+  mqDesktop.addEventListener('change', (ev) => {
+    if (ev.matches) {
+      items.forEach(({ panel }) => {
+        panel.style.maxHeight = '';
+        panel.classList.remove('open');
+      });
+      // Opcional: desmarcar checkboxes al entrar a desktop
+      items.forEach(({ input }) => input.checked = false);
+    }
+  });
+})();
+</script>
+
+
+<style>
+    nav{
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 99;
+        width: 100%;   
+        background: linear-gradient(90deg, #1A8AF4, #166FB7);
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    }
+    nav .wrapper{
+        display: flex;
+        max-width: 1300px;
+        padding: 0px 30px;
+        height: 70px;
+        line-height: 70px;
+        margin: auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    .wrapper .logo img{
+        width: 20%;
+    }
+    .wrapper .nav-links{
+        display: inline-flex;
+    }
+    .nav-links li{
+        list-style: none;
+        margin-top: 1rem;
+    }
+    .nav-links li a{
+        color: #fff;
+        text-decoration: none;
+        font-size: 18px;
+        font-weight: 500;
+        padding: 9px 15px;
+        border-radius: 5px;
+        transition: all 0.3s ease;
+    }
+    .nav-links li a:hover{
+        background-color: rgba(80, 170, 255, 0.295);
+    }
+    .nav-links .mobile-item{
+        display: none;
+    }
+    .nav-links .drop-menu{
+        position: absolute;
+        background: #153757;
+        width: 180px;
+        line-height: 45px;
+        top: 85px;
+        opacity: 0;
+        visibility: hidden;
+        box-shadow: 0 6px 10px rgba(0,0,0,0.15);
+        border-radius: 0 0 10px 10px;
+        overflow: hidden;
+    }
+    .nav-links li:hover .drop-menu,
+    .nav-links li:hover .mega-box{
+        transition: all 0.3s ease;
+        top: 70px;
+        opacity: 1;
+        visibility: visible;
+    }
+    .drop-menu li a{
+    border-radius: 5px;
+    font-size: 18px;
+    }
+    .mega-box{
+        position: absolute;
+        left: 0;
+        width: 100%;
+        padding: 0 30px;
+        top: 85px;
+        opacity: 0;
+        visibility: hidden;
+    }
+    .mega-box .content{
+        background: #153757;
+        padding: 25px 20px;
+        display: flex;
+        width: 100%;
+        justify-content: space-between;
+        box-shadow: 0 6px 10px rgba(0,0,0,0.15);
+        border-radius: 0 0 10px 10px;
+        overflow: hidden; 
+    }
+    .mega-box .content .row{
+        width: calc(25% - 30px);
+        line-height: 45px;
+    }
+    .content .row img{
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    .content .row header{
+        color: #f2f2f2;
+        font-size: 20px;
+        font-weight: 500;
+    }
+    .content .row .mega-links{
+        margin-left: -40px;
+        border-left: 1px solid rgba(255,255,255,0.09);
+    }
+    .row .mega-links li{
+        padding: 0 20px;
+    }
+    .row .mega-links li a{
+        padding: 0px;
+        padding: 0 20px;
+        color: #d9d9d9;
+        font-size: 17px;
+        display: block;
+        border-radius: 8px;
+    }
+    .row .mega-links li a:hover{
+        background-color: rgba(80, 170, 255, 0.295);
+    }
+    .wrapper .btn{
+        color: #fff;
+        font-size: 20px;
+        cursor: pointer;
+        display: none;
+    }
+    .wrapper .btn.close-btn{
+        position: absolute;
+        right: 30px;
+        top: 10px;
+    }
+
+    /* --- Correcciones clave --- */
+
+    /* Escritorio (≥ 971px): mostrar solo enlaces de escritorio */
+    @media (min-width: 971px) {
+        .nav-links .mobile-item,
+        #showDrop,
+        #showMega {
+            display: none !important; /* evita que asomen en horizontal */
+        }
+        .drop-menu, .mega-box {
+            max-height: none !important;
+            opacity: 1 !important;
+            transform: none !important;
+        }
+    }
+
+    /* Móvil (≤ 970px): mostrar solo control móvil */
+    @media (max-width: 970px) {
+    .nav-links .desktop-item {
+        display: none !important;
+    }
+    }
+
+    /* Evita que el label móvil “oculto” ocupe espacio o capte clics en desktop por cascada */
+    .nav-links .mobile-item {
+    display: none;
+    pointer-events: none;
+    visibility: hidden;
+    }
+    @media (max-width: 970px) {
+    .nav-links .mobile-item {
+        display: block;
+        pointer-events: auto;
+        visibility: visible;
+    }
+    .drop-menu,
+    .mega-box {
+        overflow: hidden;
+        max-height: 0;                 /* colapsado por defecto (móvil) */
+        opacity: 0;
+        transform: translateY(-4px);
+        transition:
+        max-height .28s ease,
+        opacity .20s ease,
+        transform .28s ease;
+    }
+    .drop-menu.open,
+    .mega-box.open {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    }
+
+    /* Asegura que los inputs de control nunca “empujen” el layout */
+    nav input[type="checkbox"],
+    nav input[type="radio"] {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    }
+
+
+
+    @media screen and (max-width: 970px) {
+    .wrapper .btn{
+        display: block;
+    }
+    .wrapper .nav-links{
+        position: fixed;
+        height: 100vh;
+        width: 100%;
+        max-width: 350px;
+        top: 0;
+        left: -100%;
+        background: #1A8AF4;
+        display: block;
+        padding: 50px 10px;
+        line-height: 50px;
+        overflow-y: auto;
+        box-shadow: 0px 15px 15px rgba(0,0,0,0.18);
+        transition: all 0.3s ease;
+    }
+    /* custom scroll bar */
+    ::-webkit-scrollbar {
+        width: 10px;
+    }
+    ::-webkit-scrollbar-track {
+        background: #26649e;
+    }
+    ::-webkit-scrollbar-thumb {
+        background: #3A3B3C;
+    }
+    #menu-btn:checked ~ .nav-links{
+        left: 0%;
+    }
+    #menu-btn:checked ~ .btn.menu-btn{
+        display: none;
+    }
+    #close-btn:checked ~ .btn.menu-btn{
+        display: block;
+    }
+    .nav-links li{
+        margin: 15px 10px;
+    }
+    .nav-links li a{
+        padding: 0 20px;
+        display: block;
+        font-size: 20px;
+    }
+    .nav-links .drop-menu{
+        position: static;
+        opacity: 1;
+        top: 65px;
+        visibility: visible;
+        padding-left: 20px;
+        width: 100%;
+        max-height: 0px;
+        overflow: hidden;
+        box-shadow: none;
+        transition: all 0.3s ease;
+    }
+    #showDrop:checked ~ .drop-menu,
+    #showMega:checked ~ .mega-box{
+        max-height: 100%;
+    }
+    .nav-links .desktop-item{
+        display: none;
+    }
+    .nav-links .mobile-item{
+        display: block;
+        color: #f2f2f2;
+        font-size: 20px;
+        font-weight: 500;
+        padding-left: 20px;
+        cursor: pointer;
+        border-radius: 5px;
+        transition: all 0.3s ease;
+    }
+    .nav-links .mobile-item:hover{
+        background: #153757;
+    }
+    .drop-menu li{
+        margin: 0;
+    }
+    .drop-menu li a{
+        border-radius: 5px;
+        font-size: 18px;
+    }
+    .mega-box{
+        position: static;
+        top: 65px;
+        opacity: 1;
+        visibility: visible;
+        padding: 0 20px;
+        max-height: 0px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+    .mega-box .content{
+        box-shadow: none;
+        flex-direction: column;
+        padding: 20px 20px 0 20px;
+    }
+    .mega-box .content .row{
+        width: 100%;
+        margin-bottom: 15px;
+        border-top: 1px solid rgba(255,255,255,0.08);
+    }
+    .mega-box .content .row:nth-child(1),
+    .mega-box .content .row:nth-child(2){
+        border-top: 0px;
+    }
+    .content .row .mega-links{
+        border-left: 0px;
+        padding-left: 15px;
+    }
+    .row .mega-links li{
+        margin: 0;
+    }
+    .content .row header{
+        font-size: 19px;
+    }
+    }
+    nav input{
+        display: none;
+    }
+
+    .body-text{
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 100%;
+        text-align: center;
+        padding: 0 30px;
+    }
+    .body-text div{
+        font-size: 45px;
+        font-weight: 600;
+    }
+</style>

@@ -1,0 +1,188 @@
+---
+import Navbar from '../../components/menu.astro'
+import Footer from '../../components/ppagina.astro'
+import manuals, { type ManualVersion } from '../../data/manuals'
+import "../../styles.css";
+
+// Utilidades “lado servidor”
+const byDateDesc = (a: ManualVersion, b: ManualVersion) =>
+  Date.parse(b.date) - Date.parse(a.date);
+
+const versions = [...manuals].sort(byDateDesc);
+
+// Inicial: ?v= en URL → si no existe, la más reciente
+const url = new URL(Astro.request.url);
+const vParam = url.searchParams.get('v');
+const initial: ManualVersion = (vParam && versions.find(v => v.id === vParam)) || versions[0];
+
+---
+
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>LoRaVIEW</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+        <link href="https://fonts.googleapis.com/css2?family=Geist&display=swap" rel="stylesheet">
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+        <meta name="description" content="Dashboard de Red LoRa para visualizar la cobertura y rendimiento mediante mapas de calor.">
+        <meta name="keywords" content="LoRa, IoT, Dashboard, Mapa de Calor, Redes">
+        <meta name="author" content="Pol Alexander Ballesteros Quiroga">
+        <meta property="og:title" content="Dashboard de Red LoRa Cochabamba">
+        <meta property="og:description" content="Visualiza la cobertura y rendimiento de las redes LoRa en Cochabamba, Bolivia.">
+    </head>
+    <body>
+      <Navbar />
+        
+        <div class="parent">
+            <div class="div1">
+                <img src="../src/layouts/BannerLoRa.png" alt="LoRaVIEW" style="width: 50dvw; margin-bottom: -1rem;">
+            </div>
+            <!-- Card de metadatos -->
+            <div class="div2">
+                <div class="card shadow-sm w-100">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">Detalle de versión</h5>
+                    <p class="mb-2"><strong>Versión:</strong> <span id="ver-text">{initial.id}</span></p>
+                    <p class="mb-3"><strong>Fecha:</strong> 
+                    <span id="date-text">
+                        {new Date(initial.date).toLocaleDateString('es-BO', { day: '2-digit', month: '2-digit', year: 'numeric' })}
+                    </span>
+                    </p>
+                    <div class="d-flex gap-2">
+                    <a id="download-link" class="btn btn-outline-primary btn-sm" href={initial.file} download>Descargar PDF</a>
+                    <a id="open-newtab" class="btn btn-outline-secondary btn-sm" href={initial.file} target="_blank" rel="noopener">Abrir en pestaña nueva</a>
+                    </div>
+                    <div id="status" class="mt-3 small text-muted" aria-live="polite"></div>
+                </div>
+                </div>
+            </div>
+
+            <!-- Título + selector -->
+            <div class="div3">
+                <h2>MANUAL DE USUARIO</h2>
+                <div class="mt-3">
+                <label for="versionSelect" class="form-label">Selecciona la versión:</label>
+                <select id="versionSelect" class="form-select form-select-sm" aria-label="Seleccionar versión del manual">
+                    {versions.map(v => (
+                    <option value={v.id} selected={v.id === initial.id}>{v.label}</option>
+                    ))}
+                </select>
+                <small class="text-muted d-block mt-2">
+                    También puedes abrir con <code>?v={initial.id}</code> para enlazar una versión concreta.
+                </small>
+                </div>
+            </div>
+
+            <!-- Visor PDF -->
+            <div class="div4">
+                <div class="ratio ratio-16x9 border rounded-3 overflow-hidden shadow-sm">
+                <iframe
+                    id="pdfViewer"
+                    title="Manual de Usuario LoRaVIEW"
+                    src={initial.file}
+                    loading="lazy"
+                ></iframe>
+                </div>
+                <noscript>
+                <p class="mt-3">
+                    Para visualizar el PDF en esta página habilita JavaScript o
+                    <a href={initial.file} target="_blank" rel="noopener">ábrelo en una pestaña nueva</a>.
+                </p>
+                </noscript>
+            </div>
+
+            <div class="div5"><!-- reservado: changelog / notas --></div>
+            </div>
+        </div>
+      <Footer />
+      <script type="module">
+        const VERSIONS = /** @type {import('../../data/manuals').ManualVersion[]} */ (JSON.parse(String.raw`${JSON.stringify(versions)}`));
+        const INITIAL  = /** @type {import('../../data/manuals').ManualVersion}   */ (JSON.parse(String.raw`${JSON.stringify(initial)}`));
+
+        const $sel = document.getElementById('versionSelect');
+        const $viewer = document.getElementById('pdfViewer');
+        const $verText = document.getElementById('ver-text');
+        const $dateText = document.getElementById('date-text');
+        const $download = document.getElementById('download-link');
+        const $newtab = document.getElementById('open-newtab');
+        const $status = document.getElementById('status');
+
+        const byId = (id) => VERSIONS.find(v => v.id === id) || VERSIONS[0];
+
+        // Preferir última elección del usuario si no se especifica ?v= (sin romper SSR)
+        const url = new URL(window.location.href);
+        const vParam = url.searchParams.get('v');
+        const stored = localStorage.getItem('loraview.manual.version');
+        const initialId = vParam || stored || INITIAL.id;
+        if ($sel) $sel.value = initialId;
+
+        async function verifyAndApply(v) {
+            // Comprobación ligera del PDF (HEAD). Si falla, avisamos y no cambiamos.
+            try {
+            $status.textContent = "Verificando archivo…";
+            const res = await fetch(v.file, { method: 'HEAD' });
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            } catch (e) {
+            $status.innerHTML = `No se pudo cargar <code>${v.file}</code>. Verifica que el PDF exista en <code>/public/manuales</code>.`;
+            return;
+            }
+            $status.textContent = "";
+
+            $viewer.src = v.file;
+            $verText.textContent = v.id;
+
+            try {
+            const d = new Date(v.date);
+            $dateText.textContent = d.toLocaleDateString('es-BO', { day: '2-digit', month: '2-digit', year: 'numeric' });
+            } catch { $dateText.textContent = v.date || ''; }
+
+            $download.href = v.file;
+            $newtab.href = v.file;
+
+            localStorage.setItem('loraview.manual.version', v.id);
+
+            const u = new URL(window.location.href);
+            u.searchParams.set('v', v.id);
+            window.history.replaceState(null, '', u);
+        }
+
+        verifyAndApply(byId(initialId));
+
+        $sel?.addEventListener('change', () => verifyAndApply(byId($sel.value)));
+    </script>
+    </body>
+</html>
+
+<style>
+    :root { --accent: #f4841c; }
+    .banner { width: min(50dvw, 100%); margin-bottom: -1rem; height: auto; }
+
+    .parent {
+        display: grid;
+        margin-top: 5dvw;
+        max-width: 1100px;
+        width: min(92dvw, 1100px);
+        grid-template-columns: repeat(5, 1fr);
+        grid-template-rows: repeat(5, minmax(0, auto));
+        gap: 8px;
+        margin: 5dvw auto 0; 
+        padding-inline: clamp(8px, 2dvw, 24px);
+    }
+
+    .div1 { grid-column: 1 / -1; grid-row: 1 / span 3; display: flex; justify-content: center; }
+    .div2 { grid-column: 1 / span 2; grid-row: 4 / span 1; display: flex; justify-content: center; align-items: start; }
+    .div3 { grid-column: 3 / span 3; grid-row: 4 / span 1; }
+    .div4 { grid-column: 1 / -1; grid-row: 5 / span 1; }
+    .div5 { grid-column: 1 / span 2; grid-row: 4 / span 1; display:none; }
+
+    h2 { color: var(--accent); }
+
+    iframe#pdfViewer { width: 100%; height: 100%; border: 0; }
+
+    @media (max-width: 992px) {
+    .div2, .div3, .div4 { grid-column: 1 / -1; grid-row: auto; }
+    .div4 { min-height: 70vh; }
+    }
+</style>

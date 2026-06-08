@@ -1,0 +1,529 @@
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" >
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-body" id="login-container">
+                <div class="form-container sign-in-container" style="text-align: center;">
+                    <h3>Iniciar Sesión</h3>
+                    <img src="../src/layouts/usuario.png" alt="User" style="width: 5rem;">
+                    <form novalidate>
+                        <div class="mb-3">
+                            <label class="form-label" for="exampleInputName">Usuario</label>
+                            <input type="text" class="form-control" id="exampleInputName" placeholder="Tu usuario" autocomplete="username" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="exampleInputPassword1">Contraseña</label>
+                            <input type="password" class="form-control" id="exampleInputPassword1" placeholder="••••••••" autocomplete="current-password" required>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <a class="small" href="#">Olvidé mi contraseña</a>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100 py-2">Iniciar Sesión</button>
+                    </form>
+                </div>
+                <div class="form-container sign-up-container">
+                    <h3>¿No tienes cuenta?</h3>
+                    <h5>Envía una solicitud para obtener acceso</h5>
+                    <form novalidate>
+                        <div class="mb-3">
+                            <label class="form-label" for="signupEmail">Correo electrónico</label>
+                            <input type="email" class="form-control" id="signupEmail" placeholder="nombre@correo.com" autocomplete="email" required>
+                            <div class="form-text">Usaremos este correo para contactarte.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="signupReason">Motivo de la solicitud</label>
+                            <textarea class="form-control" id="signupReason" rows="3" placeholder="Ej: Soy estudiante y necesito acceso para mi proyecto." required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-warning w-100 py-2">Solicitar Acceso</button>
+                    </form>
+                </div>
+                <div id="secondary">
+                    <div class="sec-content">
+                        <h3>Bienvenido</h3>
+                        <p>Solicita acceso para obtener una cuenta</p>
+                        <button class="ghost" id="signUp">Solicitar Acceso</button>
+                        <button class="ghost" id="signIn" style="display: none;">Iniciar Sesión</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const signUpButton = document.getElementById("signUp");
+  const signInButton = document.getElementById("signIn");
+  const modalBody    = document.getElementById("login-container");
+  const mqDesktop    = window.matchMedia("(min-width: 992px)");
+
+  function toSignUp(){
+    if (mqDesktop.matches){
+      modalBody.classList.add("right-panel-active");
+      signUpButton.style.display = "none";
+      signInButton.style.display = "block";
+    } else {
+      document.querySelector(".sign-up-container")?.scrollIntoView({ behavior: "smooth" });
+    }
+  }
+  function toSignIn(){
+    if (mqDesktop.matches){
+      modalBody.classList.remove("right-panel-active");
+      signUpButton.style.display = "block";
+      signInButton.style.display = "none";
+    } else {
+      document.querySelector(".sign-in-container")?.scrollIntoView({ behavior: "smooth" });
+    }
+  }
+
+  signUpButton.addEventListener("click", toSignUp);
+  signInButton.addEventListener("click", toSignIn);
+
+  /* Al cambiar de tamaño: en desktop, muestra Sign In por defecto */
+  mqDesktop.addEventListener("change", (e) => {
+    if (e.matches){ // entramos a desktop
+      modalBody.classList.remove("right-panel-active");
+      signUpButton.style.display = "block";
+      signInButton.style.display = "none";
+    }
+  });
+});
+</script>
+  
+<style>
+  /* ==============================
+     Variables y utilidades
+  ===============================*/
+  :root { --brand: #1A8AF4; --accent: #f4841c; --text: #585858; }
+  .text-brand { color: var(--brand); }
+  .bg-accent { background: var(--accent); }
+
+  /* ==============================
+     Modal (estructura base)
+  ===============================*/
+  .modal { --bs-modal-padding: 0; }
+  .modal-dialog { max-width: 850px; width: 95%; }
+  .modal-content {
+    display: flex;
+    flex-direction: row;
+    border-radius: 1.8rem;
+    width: 100%;
+    min-height: 420px;
+    max-height: min(85vh, 720px);
+    overflow: hidden;
+    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.2);
+    animation: fadeIn 0.3s ease-in-out;
+  }
+  body.modal-open { padding-right: 0 !important; }
+
+  /* ==============================
+     Botones / estados foco
+  ===============================*/
+  button:active { transform: scale(0.95); }
+  button:focus { outline: none; }
+
+  /* ==============================
+     Form controls
+  ===============================*/
+  .form-group {
+    border: none;
+    padding: 12px 15px;
+    margin: 5px 0;
+    width: 100%;
+  }
+
+  /* ==============================
+     Cuerpo del modal (base)
+  ===============================*/
+  .modal-body {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.6s ease-in-out;
+    position: relative;
+    overflow: hidden;
+    align-items: center;
+  }
+
+  /* Contenedor general del login (base) */
+  #login-container { 
+    display: grid; 
+    grid-template-columns: 1fr; 
+    gap: 1rem; 
+    align-items: stretch; 
+  }
+
+  /* Contenedores de formularios (base) */
+  .form-container { 
+    position: absolute; 
+    top: 0; 
+    bottom: 0; 
+    width: 50%; 
+    height: auto; 
+    padding: 50px; 
+  }
+
+  /* ==============================
+     Estado inicial y transiciones de paneles
+  ===============================*/
+  .sign-in-container {
+    left: 0;
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+    z-index: 2;
+  }
+
+  .modal-body.right-panel-active .sign-in-container {
+    opacity: 0;
+    transform: translateX(100%);
+    z-index: 1; /* Se manda atrás cuando se activa */
+    pointer-events: none;
+  }
+
+  .sign-up-container {
+    left: 100%;
+    opacity: 0;
+    z-index: 2;
+  }
+
+  .modal-body.right-panel-active .sign-up-container {
+    transform: translateX(-100%);
+    opacity: 1;
+    z-index: 5; /* Ahora está encima cuando se activa */
+    transition: transform 0.3s ease-in-out, opacity 0.2s ease-in-out;
+  }
+
+  /* ==============================
+     Animaciones de texto
+  ===============================*/
+  @keyframes fadeMove {
+    0% { opacity: 0; transform: translateX(-30px); }
+    100% { opacity: 1; transform: translateX(0); }
+  }
+
+  @keyframes fadeMoveReverse {
+    0% { opacity: 0; transform: translateX(30px); }
+    100% { opacity: 1; transform: translateX(0); }
+  }
+
+  .sign-in-container h3,
+  .sign-in-container h4,
+  .sign-in-container form { animation: fadeMove 0.6s ease-in-out; }
+
+  .sign-up-container h3,
+  .sign-up-container h5,
+  .sign-up-container button { animation: fadeMoveReverse 0.6s ease-in-out; }
+
+  /* ==============================
+     Panel secundario (curva amarilla)
+  ===============================*/
+  #secondary {
+    inset: 0 auto 0 50%;
+    width: 160%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: left;
+    background: #f4841c;
+    /* Para navegadores modernos */
+    mask-image: url("data:image/svg+xml,<svg width='1500px' height='578px' viewBox='0 0 1500 578px' version='1.1' xmlns='http://www.w3.org/2000/svg'><g fill='none' fill-rule='evenodd'><path d='M33.6,0 C14.8,36.7 27.4,126.8 71.2,270.1 C93.1,341.2 77.1,443.8 23,578 L1467,578 C1413,443.8 1397.1,341.2 1418.8,270.1 C1462.6,126.8 1475.2,36.7 1456.4,0 L33.6,0 Z' fill='white'/></g></svg>");
+    mask-repeat: no-repeat;
+    mask-position: left top;
+    mask-size: contain;
+    color: white;
+    position: absolute;
+    right: -113.5%; /* Desplaza el fondo amarillo fuera de la vista */
+    transition: transform 0.6s ease-in-out;
+    padding-left: 100px;
+    padding-right: 160px;
+    z-index: +5;
+    text-align: left;
+  }
+
+  .modal-body.right-panel-active #secondary {
+    transform: translateX(-95%);
+    text-align: right;
+  }
+
+  /* Contenido interno del panel */
+  .sec-content {
+    transition: all 0.6s ease-in-out;
+    width: 100%;
+  }
+
+  /* Botones dentro del panel */
+  #secondary .ghost {
+    transition: all 0.6s ease-in-out;
+    margin-left: 0;
+  }
+
+  .modal-body.right-panel-active #secondary .ghost {
+    margin-left: auto; /* Se mueve a la derecha cuando está activo */
+    margin-right: 0;
+  }
+
+  /* Botón ghost (estilo general) */
+  .ghost {
+    background: transparent;
+    border: 1px solid white;
+    color: white;
+    padding: 10px 30px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.6s;
+  }
+
+  .ghost:hover { background: rgba(255, 255, 255, 0.2); }
+
+  /* ==============================
+     #login-container como .modal-body (stack base)
+     (se mantiene para respetar tu cascade actual)
+  ===============================*/
+  #login-container.modal-body {
+    display: grid;
+    grid-template-columns: 1fr; /* stack en mobile */
+    gap: 1rem;
+    width: 100%;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+    align-items: stretch;
+    transition: none; /* sin transiciones en mobile */
+  }
+
+  /* ==============================
+     Media query: Desktop (≥992px)
+     (se mantiene orden/precedencia original)
+  ===============================*/
+  @media (min-width: 992px){
+    #login-container { 
+      display: grid; 
+      grid-template-columns: 1fr 1fr; 
+      position: relative; 
+    }
+    .form-container { 
+      position: absolute; 
+      top: 0; 
+      bottom: 0; 
+      height: 100%; 
+      padding: 50px; 
+    }
+    #login-container.modal-body {
+      position: relative; 
+      min-height: 500px; 
+      display: grid; 
+      grid-template-columns: 1fr 1fr; 
+      transition: transform .6s ease-in-out;
+    }
+  }
+
+  /* ==============================
+     Media query: Mobile (<992px) - neutralizar estado activo
+  ===============================*/
+  @media (max-width: 991.98px){
+    .modal-body.right-panel-active .sign-in-container,
+    .modal-body.right-panel-active .sign-up-container {
+      transform: none !important;
+      opacity: 1 !important;
+      pointer-events: auto !important;
+      position: static;
+    }
+  }
+
+  /* ==============================
+     Media query: Mobile (<992px) - layout apilado y resets
+     (colocado después para mantener tu orden actual)
+  ===============================*/
+  @media (max-width: 991.98px){
+    /* El body del modal: autoajuste y scroll si es largo */
+    #login-container.modal-body{
+      display: block !important;
+      height: auto !important;
+      max-height: 80vh;
+      overflow-y: auto !important;
+      overflow-x: hidden !important;
+      padding: 1rem !important;
+      transform: none !important;
+    }
+
+    /* Reset total para ambos formularios */
+    .form-container,
+    .sign-in-container,
+    .sign-up-container{
+      position: static !important;
+      width: 100% !important;
+      height: auto !important;
+      left: auto !important;
+      right: auto !important;
+      top: auto !important;
+      bottom: auto !important;
+      transform: none !important;
+      opacity: 1 !important;
+      pointer-events: auto !important;
+      z-index: auto !important;
+      padding: 1rem !important; /* padding cómodo en móvil */
+    }
+
+    /* Panel amarillo como bloque normal, sin máscara ni desplazamientos */
+    #secondary{
+      order: -1; /* arriba del todo (puedes quitar si no lo quieres primero) */
+      position: static !important;
+      width: 100% !important;
+      height: auto !important;
+      transform: none !important;
+      z-index: 0 !important;
+      pointer-events: auto !important;
+      text-align: center !important;
+      padding: 1rem !important;
+      -webkit-mask-image: none !important;
+      mask-image: none !important;
+    }
+
+    /* Por si persiste la clase activa */
+    .modal-body.right-panel-active .sign-in-container,
+    .modal-body.right-panel-active .sign-up-container{
+      transform: none !important;
+      opacity: 1 !important;
+      pointer-events: auto !important;
+      position: static !important;
+    }
+
+    /* Quita animaciones para evitar parpadeo al abrir en móvil */
+    .sign-in-container h3, .sign-in-container h4, .sign-in-container form,
+    .sign-up-container h3, .sign-up-container h5, .sign-up-container button{
+      animation: none !important;
+    }
+  }
+
+  /* ==============================
+   Theming del LOGIN (light/dark)
+   ============================== */
+
+/* Tokens específicos del login */
+:root[data-theme="light"]{
+  --login-surface: linear-gradient(180deg, rgba(15,23,42,.04), rgba(15,23,42,.02));
+  --login-surface-solid: #ffffff;
+  --login-br: rgba(15,23,42,.16);
+  --login-ink: #0f172a;
+  --login-muted: #475569;
+
+  --login-input-bg: rgba(15,23,42,.035);
+  --login-input-br: rgba(15,23,42,.22);
+  --login-input-ph: rgba(15,23,42,.55);
+
+  --login-ghost-fg: #0f172a;
+  --login-ghost-br: rgba(15,23,42,.28);
+  --login-ghost-br-h: rgba(15,23,42,.42);
+
+  --login-link: #1661c7;
+  --login-link-h: #104b98;
+
+  --login-shadow: 0 10px 24px rgba(0,0,0,.12);
+  --login-avatar-filter: none;
+}
+:root[data-theme="dark"]{
+  --login-surface: linear-gradient(180deg, rgba(255,255,255,.055), rgba(255,255,255,.03));
+  --login-surface-solid: #0b1220;
+  --login-br: rgba(255,255,255,.12);
+  --login-ink: #e5e7eb;
+  --login-muted: #a7b0bf;
+
+  --login-input-bg: rgba(255,255,255,.045);
+  --login-input-br: rgba(255,255,255,.16);
+  --login-input-ph: rgba(229,231,235,.55);
+
+  --login-ghost-fg: #e5e7eb;
+  --login-ghost-br: rgba(255,255,255,.28);
+  --login-ghost-br-h: rgba(255,255,255,.42);
+
+  --login-link: #7cc0ff;
+  --login-link-h: #a5d6ff;
+
+  --login-shadow: 0 14px 28px rgba(0,0,0,.30);
+  --login-avatar-filter: brightness(1.05) contrast(1.05);
+}
+
+/* Modal base */
+.modal-dialog { max-width: 850px; width: 95%; }
+.modal-content{
+  display:flex; flex-direction:row;
+  border-radius:1.8rem;
+  background: var(--login-surface-solid);
+  border:1px solid var(--login-br);
+  overflow:hidden;
+  box-shadow: var(--login-shadow);
+}
+/* Fondo sutil dentro del body */
+.login-body{
+  background: var(--login-surface);
+  color: var(--login-ink);
+}
+
+/* Tipos/links */
+#login-container h1,#login-container h2,#login-container h3,#login-container h4,#login-container h5{
+  color: var(--login-ink);
+}
+#login-container p, #login-container small, #login-container label{ color: var(--login-muted); }
+#login-container a{ color: var(--login-link); text-decoration: none; }
+#login-container a:hover{ color: var(--login-link-h); text-decoration: underline; }
+
+/* Inputs y selects */
+#login-container .form-control,
+#login-container .form-select{
+  color: var(--login-ink);
+  background-color: var(--login-input-bg);
+  border:1px solid var(--login-input-br);
+}
+#login-container .form-control::placeholder{ color: var(--login-input-ph); }
+#login-container .form-control:focus,
+#login-container .form-select:focus{
+  border-color: var(--accent);
+  box-shadow: 0 0 0 .2rem var(--focus);
+  outline: none;
+}
+
+/* Botones principales dentro del modal */
+#login-container .btn-primary{
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+#login-container .btn-primary:hover{ filter: brightness(.96); }
+
+/* Botón “Solicitar Acceso / Iniciar Sesión” del panel secundario */
+.login-ghost{
+  background: transparent;
+  color: var(--login-ghost-fg);
+  border:1px solid var(--login-ghost-br);
+  padding: 10px 30px;
+  border-radius: 8px;
+  transition: all .25s ease;
+}
+.login-ghost:hover{
+  border-color: var(--login-ghost-br-h);
+  background: rgba(127,127,127,.08);
+}
+
+/* Imagen/Avatar */
+.login-avatar{ filter: var(--login-avatar-filter); }
+
+/* Panel secundario (curva) usa el acento del tema */
+.login-secondary{
+  background: var(--accent); /* en vez de #f4841c fijo, usa tu token */
+  color: #fff;
+}
+
+/* Bordes/containers */
+#login-container{
+  color: var(--login-ink);
+}
+.form-container{ /* ya definido por ti; sólo aseguramos color */
+  color: var(--login-ink);
+}
+
+/* Ajustes de contraste para mobile/desktop (heredan tus MQs) */
+@media (min-width: 992px){
+  .modal-content{ background: var(--login-surface-solid); }
+}
+
+</style>

@@ -1,0 +1,345 @@
+---
+import Navbar from '../../components/menu.astro'
+import Footer from '../../components/ppagina.astro'
+import "../../styles.css";
+---
+
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>LoRaVIEW</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+        <link href="https://fonts.googleapis.com/css2?family=Geist&display=swap" rel="stylesheet">
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+        <meta name="description" content="Dashboard de Red LoRa para visualizar la cobertura y rendimiento mediante mapas de calor.">
+        <meta name="keywords" content="LoRa, IoT, Dashboard, Mapa de Calor, Redes">
+        <meta name="author" content="Pol Alexander Ballesteros Quiroga">
+        <meta property="og:title" content="Dashboard de Red LoRa Cochabamba">
+        <meta property="og:description" content="Visualiza la cobertura y rendimiento de las redes LoRa en Cochabamba, Bolivia.">
+    </head>
+  <body>
+    <Navbar />
+
+    <div class="parent" style="padding-top: 3rem;">
+      <!-- Columna principal: buscador + acordeón FAQ -->
+      <div class="div1">
+        <div class="mb-3">
+          <label for="faqSearch" class="form-label mb-1">Buscar en las preguntas</label>
+          <input id="faqSearch" type="search" class="form-control form-control-sm" placeholder="Escribe palabras clave (p. ej., 'manual', 'mapa', 'JSON')">
+        </div>
+
+        <div class="accordion" id="faqAccordion" role="tablist" aria-label="Preguntas frecuentes LoRaVIEW">
+          <!-- Pregunta 1 -->
+          <div class="accordion-item" data-question>
+            <h2 class="accordion-header" id="h-q1">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#c-q1" aria-expanded="false" aria-controls="c-q1">
+                ¿La plataforma permite importar mis propios datos de sensores para analizarlos?
+              </button>
+            </h2>
+            <div id="c-q1" class="accordion-collapse collapse" role="region" aria-labelledby="h-q1" data-bs-parent="#faqAccordion">
+              <div class="accordion-body">
+                <p class="mb-3">No. Seguimos trabajando en la compatibilidad con diferentes formatos estandar, pero actualmente se trabajo solo con el formato JSON.</p>
+                <div class="d-flex align-items-center gap-2">
+                  <button class="btn btn-outline-success btn-sm" data-vote="up" data-id="q1" aria-label="Marcar como útil">Útil 👍</button>
+                  <button class="btn btn-outline-danger btn-sm" data-vote="down" data-id="q1" aria-label="Marcar como no útil">No útil 👎</button>
+                  <span class="small text-muted ms-2" data-score="q1">—</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pregunta 2 -->
+          <div class="accordion-item" data-question>
+            <h2 class="accordion-header" id="h-q2">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#c-q2" aria-expanded="false" aria-controls="c-q2">
+                ¿Se pueden simular coberturas de red con diferentes parámetros (potencia, antena, entorno)?
+              </button>
+            </h2>
+            <div id="c-q2" class="accordion-collapse collapse" role="region" aria-labelledby="h-q2" data-bs-parent="#faqAccordion">
+              <div class="accordion-body">
+                <p class="mb-3">Sí. LoraVIEW permite modificar parámetros como potencia de transmisión, altura y ubicación de antenas y condiciones del entorno (urbano, suburbano, rural).</p>
+                <div class="d-flex align-items-center gap-2">
+                  <button class="btn btn-outline-success btn-sm" data-vote="up" data-id="q2">Útil 👍</button>
+                  <button class="btn btn-outline-danger btn-sm" data-vote="down" data-id="q2">No útil 👎</button>
+                  <span class="small text-muted ms-2" data-score="q2">—</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pregunta 3 -->
+          <div class="accordion-item" data-question>
+            <h2 class="accordion-header" id="h-q3">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#c-q3" aria-expanded="false" aria-controls="c-q3">
+                ¿Qué nivel de precisión tienen los mapas de cobertura generados?
+              </button>
+            </h2>
+            <div id="c-q3" class="accordion-collapse collapse" role="region" aria-labelledby="h-q3" data-bs-parent="#faqAccordion">
+              <div class="accordion-body">
+                <p class="mb-3">La precisión dependera de diversos factores, en pruebas realizadas se obtuvo un promedio de ±5 dB respecto a la señal real en entornos urbanos.</p>
+                <div class="d-flex align-items-center gap-2">
+                  <button class="btn btn-outline-success btn-sm" data-vote="up" data-id="q3">Útil 👍</button>
+                  <button class="btn btn-outline-danger btn-sm" data-vote="down" data-id="q3">No útil 👎</button>
+                  <span class="small text-muted ms-2" data-score="q3">—</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pregunta 4 -->
+          <div class="accordion-item" data-question>
+            <h2 class="accordion-header" id="h-q4">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#c-q4" aria-expanded="false" aria-controls="c-q4">
+                ¿Se pueden utilizar los resultados para planificar despliegues de redes IoT en proyectos de Smart City?
+              </button>
+            </h2>
+            <div id="c-q4" class="accordion-collapse collapse">
+              <div class="accordion-body">
+                <p class="mb-3">Sí. La plataforma está diseñada para servir como apoyo en la toma de decisiones para municipios, universidades y empresas que planean implementar redes LoRa.</p>
+                <div class="d-flex align-items-center gap-2">
+                  <button class="btn btn-outline-success btn-sm" data-vote="up" data-id="q4">Útil 👍</button>
+                  <button class="btn btn-outline-danger btn-sm" data-vote="down" data-id="q4">No útil 👎</button>
+                  <span class="small text-muted ms-2" data-score="q4">—</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pregunta 5 -->
+          <div class="accordion-item" data-question>
+            <h2 class="accordion-header" id="h-q5">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#c-q5" aria-expanded="false" aria-controls="c-q5">
+                ¿Puedo ver en un mapa hasta dónde llega la señal de los sensores o dispositivos?
+              </button>
+            </h2>
+            <div id="c-q5" class="accordion-collapse collapse">
+              <div class="accordion-body">
+                <p class="mb-3">rSí. Puedes visualizar la cobertura de cada sensor o gateway en un mapa interactivo con base en su ubicación GPS.</p>
+                <div class="d-flex align-items-center gap-2">
+                  <button class="btn btn-outline-success btn-sm" data-vote="up" data-id="q5">Útil 👍</button>
+                  <button class="btn btn-outline-danger btn-sm" data-vote="down" data-id="q5">No útil 👎</button>
+                  <span class="small text-muted ms-2" data-score="q5">—</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pregunta 6 -->
+          <div class="accordion-item" data-question>
+            <h2 class="accordion-header" id="h-q6">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#c-q6" aria-expanded="false" aria-controls="c-q6">
+                ¿El acceso es gratuito o tiene algún costo?
+              </button>
+            </h2>
+            <div id="c-q6" class="accordion-collapse collapse">
+              <div class="accordion-body">
+                <p class="mb-3">Es totalmente gratuito, pero el acceso es con solicitud previa.</p>
+                <div class="d-flex align-items-center gap-2">
+                  <button class="btn btn-outline-success btn-sm" data-vote="up" data-id="q6">Útil 👍</button>
+                  <button class="btn btn-outline-danger btn-sm" data-vote="down" data-id="q6">No útil 👎</button>
+                  <span class="small text-muted ms-2" data-score="q6">—</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pregunta 7 -->
+          <div class="accordion-item" data-question>
+            <h2 class="accordion-header" id="h-q7">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#c-q7" aria-expanded="false" aria-controls="c-q7">
+                ¿El sistema requiere registro institucional o puedo acceder como investigador individual?
+              </button>
+            </h2>
+            <div id="c-q7" class="accordion-collapse collapse">
+              <div class="accordion-body">
+                <p class="mb-3">El registro se maneja mediante solicitudes, en esta puedes aclarar que se le dara un uso de investigación o de uso municipal o empresarial.</p>
+                <div class="d-flex align-items-center gap-2">
+                  <button class="btn btn-outline-success btn-sm" data-vote="up" data-id="q7">Útil 👍</button>
+                  <button class="btn btn-outline-danger btn-sm" data-vote="down" data-id="q7">No útil 👎</button>
+                  <span class="small text-muted ms-2" data-score="q7">—</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div><!-- end accordion -->
+      </div>
+
+      <!-- Lateral: sugerencias -->
+      <div class="div2" style="padding-left: 2rem;">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <h5 class="card-title mb-3">Sugerencias</h5>
+            <ul class="list-unstyled small mb-3">
+              <li>• Usa términos concretos al buscar (p. ej., “RSSI”, “CSV”, “Leaflet”).</li>
+              <li>• Revisa el <a href="/ruta/a/manual?v=1.0">Manual de Usuario</a> según tu versión.</li>
+              <li>• En “Herramientas” encontrarás LoRaMAP y LoRaTRACK al iniciar sesión.</li>
+              <li>• Si algo falla, intenta en modo incógnito o limpia caché.</li>
+            </ul>
+            <hr>
+            <div class="small">
+              <div>Total de preguntas: <strong id="totalQ">7</strong></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pie: formulario para enviar una pregunta por correo -->
+      <div class="div3">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <h5 class="card-title mb-3">¿No encontraste tu respuesta?</h5>
+            <form id="askForm" class="row g-2" autocomplete="on">
+              <div class="col-md-4">
+                <label class="form-label small" for="name">Tu nombre (opcional)</label>
+                <input id="name" type="text" class="form-control form-control-sm" placeholder="Tu nombre">
+              </div>
+              <div class="col-md-4">
+                <label class="form-label small" for="email">Tu correo</label>
+                <input id="email" type="email" class="form-control form-control-sm" placeholder="tucorreo@ejemplo.com" required>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label small" for="topic">Tema</label>
+                <input id="topic" type="text" class="form-control form-control-sm" placeholder="Ej: Problema con mapa">
+              </div>
+              <div class="col-12">
+                <label class="form-label small" for="message">Tu pregunta</label>
+                <textarea id="message" class="form-control form-control-sm" rows="3" placeholder="Describe el problema o la duda…" required></textarea>
+              </div>
+              <div class="col-12 d-flex gap-2">
+                <button class="btn btn-primary btn-sm" type="submit">Enviar por correo</button>
+                <button class="btn btn-outline-secondary btn-sm" type="button" id="copyMail">Copiar correo de soporte</button>
+                <span class="small text-muted ms-2" id="formStatus" aria-live="polite"></span>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div><!-- parent -->
+
+    <Footer />
+
+    <!-- IMPORTANTE: Bootstrap JS para que funcione el acordeón -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+
+    <!-- Scripts: búsqueda, votos y mailto -->
+    <script type="module">
+      // ====== Config ======
+      const SUPPORT_EMAIL = "soporte@loraview.bo"; // <-- cámbialo
+      const VOTE_KEY = "loraview.faq.votes";       // localStorage key
+
+      // ====== Utilidad: votos ======
+      function loadVotes() {
+        try { return JSON.parse(localStorage.getItem(VOTE_KEY) || "{}"); }
+        catch { return {}; }
+      }
+      function saveVotes(v) { localStorage.setItem(VOTE_KEY, JSON.stringify(v)); }
+      function updateItemScore(id) {
+        const votes = loadVotes()[id] || { up: 0, down: 0 };
+        const total = votes.up + votes.down;
+        const pct = total ? Math.round((votes.up / total) * 100) : null;
+        const el = document.querySelector(`[data-score="${id}"]`);
+        if (el) el.textContent = total ? `${votes.up} 👍 / ${votes.down} 👎 (${pct}%)` : "—";
+      }
+
+      // Init scores on load
+      const items = ["q1","q2","q3","q4","q5","q6","q7"];
+      items.forEach(updateItemScore);
+
+      // Delegación de votos
+      document.addEventListener("click", (e) => {
+        const btn = e.target.closest("[data-vote]");
+        if (!btn) return;
+        const id = btn.getAttribute("data-id");
+        const kind = btn.getAttribute("data-vote"); // "up" | "down"
+        const all = loadVotes();
+        all[id] = all[id] || { up: 0, down: 0 };
+        all[id][kind] += 1;
+        saveVotes(all);
+        updateItemScore(id);
+      });
+
+      // ====== Búsqueda ======
+      const search = document.getElementById("faqSearch");
+      const qItems = Array.from(document.querySelectorAll("[data-question]"));
+      document.getElementById("totalQ").textContent = qItems.length.toString();
+
+      function normalize(s) { return s.toLowerCase().normalize("NFD").replace(/\p{Diacritic}/gu,""); }
+      function filterFAQ(term) {
+        const q = normalize(term);
+        for (const it of qItems) {
+          const text = normalize(it.innerText || "");
+          it.style.display = (!q || text.includes(q)) ? "" : "none";
+        }
+      }
+      search?.addEventListener("input", () => filterFAQ(search.value));
+
+      // ====== Mailto ======
+      const form = document.getElementById("askForm");
+      const status = document.getElementById("formStatus");
+      const copyBtn = document.getElementById("copyMail");
+
+      copyBtn?.addEventListener("click", async () => {
+        try { await navigator.clipboard.writeText(SUPPORT_EMAIL); status.textContent = "Correo copiado."; }
+        catch { status.textContent = "No se pudo copiar el correo."; }
+      });
+
+      form?.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const name = document.getElementById("name").value.trim();
+        const email = document.getElementById("email").value.trim();
+        const topic = document.getElementById("topic").value.trim() || "Consulta FAQ LoRaVIEW";
+        const message = document.getElementById("message").value.trim();
+
+        const subject = encodeURIComponent(`[LoRaVIEW] ${topic}`);
+        const body = encodeURIComponent(
+`Hola equipo LoRaVIEW,
+Mi nombre: ${name || "(no especificado)"}
+Correo de contacto: ${email}
+---
+Pregunta:
+${message}
+
+(Enviado desde la sección FAQ del sitio)`
+        );
+        const href = `mailto:${SUPPORT_EMAIL}?subject=${subject}&body=${body}`;
+        window.location.href = href;
+        status.textContent = "Preparando correo…";
+      });
+    </script>
+
+    <style>
+      :root { --accent: #f4841c; }
+      body { font-family: Geist, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif; }
+
+      /* Centrado y ancho controlado del grid */
+      .parent {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        grid-template-rows: repeat(5, minmax(0, auto));
+        gap: 8px;
+
+        max-width: 1100px;
+        width: min(92dvw, 1100px);
+        margin: 5dvw auto 3rem;
+        padding-inline: clamp(8px, 2dvw, 24px);
+      }
+
+      .div1 { grid-column: 1 / span 3; grid-row: 1 / span 4; }
+      .div2 { grid-column: 4 / span 2; grid-row: 1 / span 4; }
+      .div3 { grid-column: 1 / -1;    grid-row: 5 / span 1; }
+
+      .accordion-button:focus { box-shadow: 0 0 0 .2rem rgba(244,132,28,.25); }
+      .accordion-button:not(.collapsed) { color: #000; background-color: rgba(244,132,28,.08); }
+
+      .card { border-radius: 16px; }
+      .btn-primary { background: var(--accent); border-color: var(--accent); }
+      .btn-primary:hover { filter: brightness(0.95); }
+
+      @media (max-width: 992px) {
+        .div1, .div2, .div3 { grid-column: 1 / -1; grid-row: auto; }
+      }
+    </style>
+  </body>
+</html>

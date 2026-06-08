@@ -1,0 +1,639 @@
+
+
+:root[data-theme="light"] {
+  --bg: #ffffff;
+  --ink: #0f172a;
+  --muted: #475569;
+  --accent:  #1678f3;
+  --accent2: #7cc0ff;
+  --ok:   #1ea76f;
+  --warn: #d68910;
+  --bad:  #c84343;
+  --elev-bg: rgba(15, 23, 42, 0.06);
+  --elev-br: rgba(15, 23, 42, 0.14);
+  --bar-bg: rgba(0,0,0,.12);
+  --bar-kpi: #0f172a;
+  --svg-ink: #203148;
+  --svg-ink-soft: rgba(32,49,72,.7);
+  --ring1: rgba(22,120,243,0.28);
+  --ring2: rgba(124,192,255,0.28);
+  --ring3: rgba(203,234,255,0.28);
+  --hairline: rgba(15,23,42,.14);
+  --chip-br: rgba(15,23,42,.18);
+  --soft-br: rgba(15,23,42,.14);
+  --soft-br-hover: rgba(15,23,42,.28);
+  --focus: rgba(22,120,243,.22);
+  --scroll-track: #e6eefb;
+  --scroll-thumb: #c3d6f6;
+  --ground-fill: rgba(32,49,72,0.08);
+  --canvas-bg:    linear-gradient(180deg, rgba(15,23,42,.035), rgba(15,23,42,.02));
+  --canvas-ink:   #203148;
+  --canvas-noise: rgba(32,49,72,.22);
+  --packet-ok:    #0ea5e9;
+  --packet-dead:  #e11d48;
+  --rx-fill:      #1678f3;  
+}
+
+:root[data-theme="dark"] {
+  --bg: #0b1220;
+  --ink: #e5e7eb;
+  --muted: #a5b4c7;
+  --accent:  #7cc0ff;
+  --accent2: #cbeaff;
+  --ok:   #4ade80;
+  --warn: #fbbf24;
+  --bad:  #f87171;
+  --elev-bg: rgba(255,255,255,0.05);
+  --elev-br: rgba(255,255,255,0.10);
+  --bar-bg: rgba(255,255,255,.15);
+  --bar-kpi: #e5e7eb;
+  --svg-ink: #e6edf7;
+  --svg-ink-soft: rgba(230,237,247,.7);
+  --ring1: rgba(124,192,255,0.55);
+  --ring2: rgba(203,234,255,0.40);
+  --ring3: rgba(203,234,255,0.18);
+  --hairline: rgba(255,255,255,.14);
+  --chip-br: rgba(255,255,255,.18);
+  --soft-br: rgba(255,255,255,.12);
+  --soft-br-hover: rgba(255,255,255,.28);
+  --focus: rgba(124,192,255,.25);
+  --scroll-track: #0f2136;
+  --scroll-thumb: #334155;
+  --ground-fill: rgba(255,255,255,0.05);
+  --canvas-bg:    linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+  --canvas-ink:   #e6edf7;
+  --canvas-noise: rgba(255,255,255,.2);
+  --packet-ok:    #68e1fd;
+  --packet-dead:  #f87171;
+  --rx-fill:      #7cc0ff;
+}
+
+/* ------------------------------- 2) BASE GLOBAL ----------------------------- */
+
+html, body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color .2s ease, color .2s ease;
+}
+
+.section { padding: clamp(28px, 4vw, 72px) 0; }
+
+/* --------------------------- 3) TARJETAS / ELEVACIÓN ------------------------ */
+
+.card-fluent {
+  background: linear-gradient(180deg, var(--elev-bg), transparent);
+  border: 1px solid var(--elev-br);
+  border-radius: 16px;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 10px 30px rgba(0,0,0,.18);
+}
+
+/* ------------------------------ 4) TÍTULOS/CHIPS ---------------------------- */
+
+.title-grad{
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.chip{
+  display:inline-flex; gap:.5rem; align-items:center;
+  padding:.28rem .7rem; border-radius:999px;
+  border:1px solid var(--chip-br);
+  color: var(--muted);
+  background: transparent;
+}
+
+.divider{
+  height:1px;
+  background: linear-gradient(90deg, transparent, var(--hairline), transparent);
+}
+
+/* -------------------------------- 5) GRID/REVEAL ---------------------------- */
+
+.grid{ display:grid; gap:1rem; }
+@media (min-width: 992px){
+  .grid-2{ grid-template-columns:1.1fr .9fr; }
+  .grid-3{ grid-template-columns:repeat(3,1fr); }
+}
+
+.reveal{ opacity:0; transform: translateY(14px); transition: opacity .6s ease, transform .6s ease; }
+.reveal.in{ opacity:1; transform:none; }
+.fade-in-up{ opacity:0; transform: translateY(10px); animation: fin .7s ease forwards; }
+@keyframes fin{ to { opacity:1; transform:none; } }
+
+/* ------------------------------- 6) KPIs Y BARRAS --------------------------- */
+
+.kpi{
+  font-weight: 800;
+  font-size: clamp(26px, 3.2vw, 40px);
+  line-height: 1;
+  color: var(--bar-kpi);
+}
+
+.bar-bg{
+  height: 10px; border-radius: 10px;
+  background: var(--bar-bg);
+  overflow: hidden;
+}
+.bar-fill{
+  height: 10px; border-radius: 10px;
+  width: 0%;
+  transition: width .35s ease, background-color .2s ease;
+}
+
+/* El código JS ya asigna var(--ok / --warn / --bad) al RSSI-bar; aquí añadimos fallback */
+#rssi-bar { background: var(--accent); }
+#delta-bar { background: var(--accent2); }
+
+/* ----------------------------- 7) FORMULARIOS/UI ---------------------------- */
+
+.form-select,
+.form-range,
+.form-control {
+  color: var(--ink);
+  background-color: transparent;
+  border-color: var(--soft-br);
+}
+
+.form-select:focus,
+.form-range:focus,
+.form-control:focus,
+.btn:focus,
+a.btn-soft:focus {
+  box-shadow: 0 0 0 .25rem var(--focus);
+  border-color: var(--accent);
+  outline: none;
+}
+
+/* Rango: pista/pulgar visibles en día */
+.form-range::-webkit-slider-runnable-track { background: var(--bar-bg); height: 6px; border-radius: 6px; }
+.form-range::-webkit-slider-thumb { margin-top: -5px; width: 16px; height: 16px; border-radius: 50%; background: var(--accent); border: 2px solid #fff; }
+.form-range::-moz-range-track { background: var(--bar-bg); height: 6px; border-radius: 6px; }
+.form-range::-moz-range-thumb { width: 16px; height: 16px; border-radius: 50%; background: var(--accent); border: 2px solid #fff; }
+
+/* Enlaces suaves */
+a.btn-soft{
+  display:inline-block;
+  border-radius:12px;
+  border:1px solid var(--soft-br);
+  padding:.7rem 1rem;
+  color: var(--ink);
+  text-decoration:none;
+  background: transparent;
+}
+a.btn-soft:hover{ border-color: var(--soft-br-hover); }
+
+/* ------------------------------- 8) SVG: ONDAS ------------------------------ */
+/* Objetivo: que todo se vea fuerte en día sin “lavarse” en noche.
+   Reglas cubren tus SVG: #wave-svg (ondas/antena/suelo) y #track-svg (trayecto). */
+
+svg { shape-rendering: geometricPrecision; text-rendering: geometricPrecision; }
+
+/* ===== #wave-svg ===== */
+#wave-svg { color: var(--svg-ink); }
+
+/* Suelo (rect final) — dale más presencia en día */
+#wave-svg > rect {
+  fill: rgba(32,49,72,.06); /* LIGERO en día */
+}
+:root[data-theme="dark"] #wave-svg > rect {
+  fill: rgba(255,255,255,.06);
+}
+
+/* Antena y base: sobreescribe atributos inline con !important */
+#wave-svg rect,
+#wave-svg circle,
+#wave-svg path,
+#wave-svg polygon {
+  stroke: var(--svg-ink-soft) !important;
+  fill: none;
+}
+
+/* Colores específicos de partes:
+   - poste/base: relleno leve para verse en día
+   - halo antena: solo trazo
+*/
+#wave-svg rect[x="58"][y="120"] {      /* poste */
+  fill: var(--svg-ink-soft) !important;
+  stroke: none !important;
+}
+#wave-svg rect[x="52"][y="168"] {      /* base */
+  fill: var(--svg-ink) !important;
+  opacity: .85 !important;
+  stroke: none !important;
+}
+#wave-svg circle[cx="60"][cy="118"] {  /* halos antena */
+  fill: none !important;
+  stroke: var(--svg-ink) !important;
+  opacity: .75 !important;
+}
+
+/* Obstáculos generados (árboles/edificios) */
+#obs-group rect,
+#obs-group polygon {
+  stroke: none !important;
+  fill: var(--svg-ink-soft) !important; /* más visibles en día */
+}
+
+/* Receptor (punto) */
+#rx-dot {
+  fill: var(--accent) !important;
+  stroke: #ffffff !important;
+  stroke-width: 1.2 !important;
+}
+
+/* Arcos animados en #waves2-group los pinta tu JS con var(--accent).
+   Aumentamos legibilidad diurna con grosor mínimo. */
+#waves2-group path {
+  stroke-linecap: round;
+  stroke-width: 1.2; /* valor mínimo; JS lo ajusta dinámicamente */
+}
+
+/* Anillos escalados por JS (r1/r2/r3) */
+#r1, #r2, #r3 {
+  stroke: var(--accent) !important;
+  opacity: .55 !important; /* subir opacidad en día para que se vean */
+}
+:root[data-theme="dark"] #r1, 
+:root[data-theme="dark"] #r2,
+:root[data-theme="dark"] #r3 {
+  opacity: .45 !important;
+}
+
+/* ===== #track-svg ===== */
+/* Línea de trayectoria */
+#track-svg #track-line {
+  stroke: var(--svg-ink-soft) !important;
+  stroke-width: 2.25 !important;
+}
+
+/* Puntos de trayectoria: los colorea tu JS en --ok/--warn/--bad.
+   Aumentamos su presencia con contorno blanco/negro según tema. */
+#track-svg circle {
+  stroke-width: 1.5 !important;
+  stroke: rgba(255,255,255,.85) !important;   /* contorno claro para día */
+}
+:root[data-theme="dark"] #track-svg circle {
+  stroke: rgba(0,0,0,.35) !important;         /* contorno oscuro en noche */
+}
+
+/* Etiquetas dentro de SVG */
+#wave-svg text,
+#rings text,
+#track-svg text {
+  fill: var(--muted) !important;
+}
+
+/* Sombra suave única (evitar borrosidad) */
+.soft-shadow{
+  filter: drop-shadow(0 6px 12px rgba(0,0,0,.22));
+}
+:root[data-theme="dark"] .soft-shadow{
+  filter: drop-shadow(0 6px 12px rgba(0,0,0,.5));
+}
+
+/* ------------------------ 9) MINI-SIM COBERTURA (RINGS) --------------------- */
+/* Tus <radialGradient> ya usan var(--ring1..3). Solo reforzamos el punto central. */
+
+#rings { color: var(--svg-ink); }
+#rings circle[cx="160"][cy="160"][r="6"] {  /* punto central */
+  fill: var(--accent) !important;
+  stroke: #fff !important;
+  stroke-width: 1.2 !important;
+}
+
+/* ------------------------------- 10) ACCESORIOS ----------------------------- */
+
+/* Scrollbars (si las usas en paneles laterales) */
+::-webkit-scrollbar { width: 10px; }
+::-webkit-scrollbar-track { background: var(--scroll-track); }
+::-webkit-scrollbar-thumb { background: var(--scroll-thumb); }
+
+/* Enlaces por defecto: buen contraste en ambos temas */
+a { color: var(--accent); }
+a:hover { text-decoration: underline; }
+@media screen and (max-width: 970px) {
+  .wrapper .nav-links{
+    background: var(--menu-bg);
+  }
+  ::-webkit-scrollbar-track { background: var(--scroll-track); }
+  ::-webkit-scrollbar-thumb { background: var(--scroll-thumb); }
+}
+
+/* Botón del tema */
+.theme-toggle{
+  display: inline-flex;
+  gap: .4rem;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: var(--btn-bg);
+  color: var(--btn-text);
+  border: 1px solid transparent;
+  cursor: pointer;
+}
+.theme-toggle:hover{ background: var(--btn-hover); }
+.theme-toggle .icon-moon{ display: none; }
+:root[data-theme="dark"] .theme-toggle .icon-sun{ display: none; }
+:root[data-theme="dark"] .theme-toggle .icon-moon{ display: inline; }
+
+/* Contenedor de la portada/login con la animación */
+.wave-container{
+  position: relative;
+  isolation: isolate;       /* crea un stacking context propio */
+  min-height: 100dvh;
+  overflow: hidden;
+}
+
+/* El bloque de contenido por encima del canvas */
+.wave-container .inicio{
+  position: relative;
+  z-index: 1;
+  color: var(--ink);         /* evita #585858 que no contrasta en oscuro */
+}
+
+/* Fondo del canvas según tema (sutil) */
+:root[data-theme="light"]{
+  --login-canvas-bg: linear-gradient(180deg, rgba(15,23,42,.035), rgba(15,23,42,.02));
+}
+:root[data-theme="dark"]{
+  --login-canvas-bg: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.02));
+}
+/* Tema: URLs y opacidad por modo */
+:root[data-theme="light"]{
+  --login-bg-image: url('/img/login-city-light.png');
+  --city-opacity: 0.60;                  /* ajusta a gusto */
+  --login-canvas-bg: linear-gradient(180deg, rgba(15,23,42,.035), rgba(15,23,42,.02)); /* ya lo tienes */
+}
+:root[data-theme="dark"]{
+  --login-bg-image: url('/img/login-city-dark.png');
+  --city-opacity: 0.35;                  /* menos “fuerte” en oscuro */
+  --login-canvas-bg: linear-gradient(180deg, rgba(255,255,255,.035), rgba(255,255,255,.02));
+}
+
+/* Contenedor del login */
+.wave-container{
+  position: relative;
+  isolation: isolate;
+  min-height: 100dvh;
+  overflow: hidden;
+}
+
+/* Imagen de fondo que cambia con el tema */
+.wave-container::before{
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: var(--login-bg-image);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: var(--city-opacity);
+  z-index: 0;              /* debajo del canvas */
+  pointer-events: none;
+}
+
+/* Asegura que el canvas quede sobre la imagen */
+.wave-container canvas{
+  z-index: 1;
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* El contenido textual encima de todo */
+.wave-container .inicio{
+  position: relative;
+  z-index: 2;
+  color: var(--ink);
+}
+/* ============================
+   Cards (Bootstrap 5.3) – Tema
+   ============================ */
+:root[data-theme="light"]{
+  --card-bg:    #ffffff;
+  --card-ink:   #0f172a;
+  --card-muted: #475569;
+  --card-br:    rgba(15,23,42,.14);
+  --card-capbg: rgba(15,23,42,.04);
+  --card-hover: 0 8px 24px rgba(2,8,23,.08);
+}
+
+:root[data-theme="dark"]{
+  --card-bg:    #0b1220;                 /* superficie oscura */
+  --card-ink:   #e5e7eb;                 /* texto principal */
+  --card-muted: #a7b0bf;                 /* texto secundario */
+  --card-br:    rgba(255,255,255,.12);   /* borde */
+  --card-capbg: rgba(255,255,255,.06);   /* header/footer */
+  --card-hover: 0 12px 32px rgba(0,0,0,.35);
+}
+
+/* Mapea variables de Bootstrap + pequeños ajustes */
+.card{
+  --bs-card-bg:             var(--card-bg);
+  --bs-card-color:          var(--card-ink);
+  --bs-card-border-color:   var(--card-br);
+  --bs-card-cap-bg:         var(--card-capbg);
+  --bs-card-cap-color:      var(--card-ink);
+  --bs-card-box-shadow:     none;
+
+  background:   var(--card-bg);
+  color:        var(--card-ink);
+  border:       1px solid var(--card-br);
+  box-shadow:   0 1px 2px rgba(0,0,0,.03);
+  transition:   box-shadow .2s ease, transform .2s ease, border-color .2s ease;
+}
+
+/* Texto secundario dentro de la card */
+.card .card-text,
+.card .text-muted{ color: var(--card-muted) !important; }
+
+/* Encabezado y pie */
+.card .card-header,
+.card .card-footer{
+  background: var(--card-capbg);
+  color:      var(--card-ink);
+  border-color: var(--card-br);
+}
+
+/* List groups dentro de cards */
+.card .list-group-item{
+  --bs-list-group-bg:          color-mix(in srgb, var(--card-bg) 92%, transparent);
+  --bs-list-group-color:       var(--card-ink);
+  --bs-list-group-border-color:var(--card-br);
+  background: var(--bs-list-group-bg);
+  color:      var(--card-ink);
+  border-color: var(--card-br);
+}
+
+/* Botones habituales dentro de cards: que siempre contrasten */
+.card .btn-outline-secondary{
+  color: var(--card-ink);
+  border-color: var(--card-br);
+}
+.card .btn-outline-secondary:hover{
+  background: color-mix(in srgb, var(--card-bg) 86%, var(--card-ink));
+  border-color: var(--card-ink);
+}
+
+/* Hover OPCIONAL: añade 'card-hover' en tu HTML si quieres elevación */
+.card.card-hover:hover{
+  transform: translateY(-2px);
+  box-shadow: var(--card-hover);
+}
+
+/* Accesibilidad para enlaces estirados */
+.card .stretched-link:focus-visible{
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: .5rem;
+}
+
+/* Imágenes de card: bordes coherentes */
+.card > .card-img-top{ border-top-left-radius: inherit; border-top-right-radius: inherit; }
+.card > .card-img-bottom{ border-bottom-left-radius: inherit; border-bottom-right-radius: inherit; }
+
+/* Overlays: asegura contraste del texto sobre imagen */
+.card .card-img-overlay{
+  color: var(--card-ink);
+  text-shadow: 0 1px 2px rgba(0,0,0,.25);
+}
+/* ============================
+   Introducción: Cards con tema
+   ============================ */
+
+/* 1) Tokens por modo */
+:root[data-theme="light"]{
+  --intro-bg:      #f5f7fb;
+  --intro-card:    #ffffff;
+  --intro-ink:     #0f172a;
+  --intro-muted:   #475569;
+  --intro-br:      rgba(15,23,42,.14);
+  --intro-shadow:  0 1px 2px rgba(2,6,23,.04), 0 8px 24px rgba(2,6,23,.06);
+}
+:root[data-theme="dark"]{
+  --intro-bg:      #070b14;
+  --intro-card:    #0b1220;
+  --intro-ink:     #e5e7eb;
+  --intro-muted:   #a7b0bf;
+  --intro-br:      rgba(255,255,255,.12);
+  --intro-shadow:  0 1px 2px rgba(0,0,0,.35), 0 8px 24px rgba(0,0,0,.45);
+}
+
+/* 2) Fondo / texto generales de la página */
+body { background: var(--intro-bg); color: var(--intro-ink); }
+
+/* 3) Cards: fondo, borde, sombra y textos */
+.card{
+  background: var(--intro-card) !important;
+  color:      var(--intro-ink);
+  border:     1px solid var(--intro-br) !important;   /* rehace el borde aunque haya .border-0 */
+  box-shadow: var(--intro-shadow);
+  border-radius: 1rem; /* similar a rounded-4 */
+}
+.card .card-title,
+.card h1,.card h2,.card h3,.card h4,.card h5{ color: var(--intro-ink); }
+.card .card-text,
+.card .text-secondary,
+.card p, .card small { color: var(--intro-muted) !important; }
+
+/* 4) Headers/footers/list-groups dentro de cards (por si los usas) */
+.card .card-header,
+.card .card-footer{
+  background: color-mix(in srgb, var(--intro-card) 92%, transparent);
+  border-color: var(--intro-br);
+  color: var(--intro-ink);
+}
+.card .list-group-item{
+  background: color-mix(in srgb, var(--intro-card) 94%, transparent);
+  border-color: var(--intro-br);
+  color: var(--intro-ink);
+}
+
+/* 5) Alert primaria dentro de cards: que contraste en ambos modos */
+.alert.alert-primary{
+  --bs-alert-bg: color-mix(in srgb, var(--accent) 12%, transparent);
+  --bs-alert-border-color: color-mix(in srgb, var(--accent) 24%, transparent);
+  --bs-alert-color: var(--intro-ink);
+  border: 1px solid var(--bs-alert-border-color);
+  background: var(--bs-alert-bg);
+  color: var(--bs-alert-color);
+}
+
+/* 6) Accordion del bloque de objetivos: fondo/bordes legibles */
+.accordion-item{
+  background: var(--intro-card);
+  border: 1px solid var(--intro-br);
+  border-radius: .75rem;
+}
+.accordion-button{
+  background: color-mix(in srgb, var(--intro-card) 94%, transparent);
+  color: var(--intro-ink);
+}
+.accordion-button:not(.collapsed){
+  background: color-mix(in srgb, var(--accent) 8%, var(--intro-card));
+  color: var(--intro-ink);
+  box-shadow: none;
+}
+.accordion-body{ color: var(--intro-muted); }
+
+/* 7) Badge del header: tono sutil también en oscuro */
+.badge.bg-primary-subtle.text-primary-emphasis{
+  background-color: color-mix(in srgb, var(--accent) 16%, transparent) !important;
+  color: color-mix(in srgb, var(--accent) 85%, white) !important;
+  border: 1px solid color-mix(in srgb, var(--accent) 28%, transparent);
+}
+
+/* 8) CTA "Funcionamiento" (btn-light) que se vea en ambos modos */
+.btn.btn-light.border{
+  background: color-mix(in srgb, var(--intro-card) 90%, white);
+  color: var(--intro-ink);
+  border-color: var(--intro-br);
+}
+.btn.btn-light.border:hover{
+  background: color-mix(in srgb, var(--intro-card) 80%, white);
+}
+/* Card que NO cambia con el tema */
+.card--fixed-accent{
+  /* Forzamos sus tokens locales */
+  --card-bg:   #f4841c;
+  --card-ink:  #ffffff;
+  --card-muted: rgba(255,255,255,.92);
+  --card-br:   transparent;
+
+  /* Mapear a variables de Bootstrap y aplicar */
+  --bs-card-bg: var(--card-bg);
+  --bs-card-color: var(--card-ink);
+
+  background: var(--card-bg) !important;
+  color: var(--card-ink) !important;
+  border: 1px solid var(--card-br) !important;
+  box-shadow: 0 8px 24px rgba(0,0,0,.12);
+}
+
+.card--fixed-accent .card-title,
+.card--fixed-accent .card-text,
+.card--fixed-accent .card-body { color: var(--card-ink) !important; }
+
+.card--fixed-accent .btn,
+.card--fixed-accent a { color: #fff; }
+
+.card--fixed-accent .btn-outline-secondary{
+  color:#fff; border-color: rgba(255,255,255,.7);
+}
+.card--fixed-accent .btn-outline-secondary:hover{
+  background: rgba(255,255,255,.12);
+}
+
+/* Si usas "card-hover" global, limita su sombra para esta card */
+.card--fixed-accent.card-hover:hover{
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(0,0,0,.18);
+}

@@ -1,0 +1,382 @@
+---
+import Navbar from '../../components/menu.astro'
+import Footer from '../../components/ppagina.astro'
+import "../../styles.css";
+---
+
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Introducción LoRaVIEW</title>
+
+    <!-- Bootstrap -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+      crossorigin="anonymous"
+    />
+
+    <!-- Iconos (opcional) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+
+    <!-- Tipografía -->
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&display=swap" rel="stylesheet" />
+
+    <meta name="description" content="Introducción a LoRaVIEW: planteamiento, formulación, objetivos y análisis situacional." />
+    <meta name="keywords" content="LoRa, IoT, GIS, Mapa de calor, Cobertura, Cochabamba, LoRaVIEW" />
+    <meta name="author" content="Pol Alexander Ballesteros Quiroga" />
+    <meta property="og:title" content="Introducción | LoRaVIEW" />
+    <meta property="og:description" content="Plataforma open source para evaluar cobertura y rendimiento de redes LoRa en Cochabamba." />
+  </head>
+
+  <body>
+    <Navbar />
+
+    <main id="top" class="container-xxl px-3 px-md-4 my-4" style="padding-top: 4rem;">
+      <!-- Header -->
+      <header class="mb-4">
+        <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center gap-2">
+          <h1 class="display-6 m-0 fw-semibold">Introducción</h1>
+          <span class="badge rounded-pill ms-0 ms-md-2 bg-primary-subtle text-primary-emphasis">
+            LoRa • IoT • GIS
+          </span>
+        </div>
+        <p class="text-secondary mt-2 mb-0">
+          Panorama general del proyecto LoRaVIEW y la motivación técnica para su desarrollo.
+        </p>
+      </header>
+
+      <!-- Layout principal -->
+      <div class="row g-3 g-lg-4">
+        <!-- Contenido -->
+        <section class="col-12 col-lg-8">
+          <!-- Card: Qué es LoRaVIEW -->
+          <article class="card shadow-sm border-0 rounded-4 mb-3">
+            <div class="card-body p-4">
+              <h2 class="h4 mb-3" id="que-es">¿Qué es LoRaVIEW?</h2>
+              <p class="mb-2">
+                <strong>LoRaVIEW</strong> es una plataforma <em>open source</em> boliviana para
+                <strong>simulación</strong> y <strong>visualización</strong> de redes <strong>LoRa</strong> reales y ficticias.
+                Integra recolección móvil (LoRa + GPS + LTE), procesamiento y <em>dashboards</em> web para
+                analizar cobertura y rendimiento; además, permite simular escenarios con modelos como
+                <em>Okumura-Hata</em>.
+              </p>
+              <div class="alert alert-primary d-flex align-items-start gap-2 mb-0" role="alert">
+                <i class="fa-solid fa-circle-info mt-1"></i>
+                <div>
+                  <strong>Tecnologías:</strong> ESP32/LoRa32 Paxcounter • GPS • SIM7600 (LTE) • Docker/Nginx Proxy Manager/MariaDB •
+                  Frontend en Astro/Bootstrap • Visualización GIS (Leaflet/Mapas de calor).
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- Card: Planteamiento del problema -->
+          <article class="card shadow-sm border-0 rounded-4 mb-3">
+            <div class="card-body p-4">
+              <h2 class="h4 mb-3" id="planteamiento">Planteamiento del problema</h2>
+              <p class="mb-2">
+                Las comunicaciones móviles han crecido sostenidamente durante décadas. En ese marco,
+                <em>LoRa</em> ofrece enlaces de largo alcance con bajo consumo, ideales para IoT. Sin embargo, en
+                <strong>entornos urbanos</strong> se enfrenta a <em>interferencias</em>, <em>atenuación</em> por obstáculos y
+                despliegues en zonas de alta densidad de edificaciones, reduciendo la cobertura y la calidad de señal.
+              </p>
+              <p class="mb-0">
+                A ello se suma la escasez de herramientas <em>open source</em> para evaluar/optimizar el desempeño.
+                Las soluciones comerciales, además de costosas, carecen de flexibilidad para adaptarse a la
+                <strong>realidad urbana y geográfica de diversas ciudades</strong>, limitando la personalización de la
+                recolección y el análisis de datos.
+              </p>
+            </div>
+          </article>
+
+          <!-- Card: Formulación -->
+          <article class="card shadow-sm border-0 rounded-4 mb-3">
+            <div class="card-body p-4">
+              <h2 class="h4 mb-3" id="formulacion">Formulación</h2>
+              <p class="mb-2">
+                Pregunta central: <strong>¿Cómo mejorar el rendimiento de redes LoRa en ciudades geograficamente complejas,
+                que carecen de una plataforma open source de evaluación de cobertura y desempeño?</strong>
+              </p>
+              <p class="mb-0">
+                En respuesta, se plantea una <strong>plataforma de evaluación open source</strong> que combine
+                recolección de datos reales con visualización geoespacial, para identificar factores que afectan
+                cobertura y calidad, y habilitar su optimización.
+              </p>
+            </div>
+          </article>
+
+          <!-- Card: Objetivos -->
+          <article class="card shadow-sm border-0 rounded-4 mb-3">
+            <div class="card-body p-4">
+              <h2 class="h4 mb-3" id="objetivos">Objetivos</h2>
+
+              <div class="mb-3">
+                <h3 class="h6 text-uppercase text-secondary fw-semibold mb-2">Objetivo general</h3>
+                <p class="mb-0">
+                  Desarrollar una plataforma de evaluación <em>open source</em> que permita estimar el desempeño de redes
+                  IoT LoRa en zonas específicas, mediante la recolección y análisis de datos reales, y su
+                  visualización geoespacial (GIS) de cobertura y rendimiento.
+                </p>
+              </div>
+
+              <div>
+                <h3 class="h6 text-uppercase text-secondary fw-semibold mb-2">Objetivos específicos</h3>
+                <div class="accordion" id="objAccordion">
+                  <div class="accordion-item border-0">
+                    <h4 class="accordion-header" id="obj1">
+                      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#objList" aria-expanded="false" aria-controls="objList">
+                        Ver lista de objetivos específicos
+                      </button>
+                    </h4>
+                    <div id="objList" class="accordion-collapse collapse" aria-labelledby="obj1" data-bs-parent="#objAccordion">
+                      <div class="accordion-body pt-2">
+                        <ul class="mb-0">
+                          <li>Identificar la normativa y estándares aplicables a redes LoRa e IoT.</li>
+                          <li>Determinar factores que afectan la calidad de la señal y la cobertura en entornos urbanos.</li>
+                          <li>Seleccionar tecnologías <em>open source</em> web para mapas de calor y GIS.</li>
+                          <li>Diseñar sondas de medición con módulos LoRa y GPS.</li>
+                          <li>Medir intensidad y calidad de señal LoRa en puntos geográficos definidos.</li>
+                          <li>Implementar la plataforma <em>open source</em> para procesar y visualizar datos geoespaciales.</li>
+                          <li>Evaluar rendimiento y cobertura para validar funcionamiento y precisión de la plataforma.</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- Card: Análisis situacional -->
+          <article class="card shadow-sm border-0 rounded-4 mb-3">
+            <div class="card-body p-4">
+              <h2 class="h4 mb-3" id="analisis">Análisis situacional</h2>
+
+              <h3 class="h6 text-muted mb-2">Contexto y antecedentes</h3>
+              <p class="mb-2">
+                Internacionalmente, LoRa se usa en <em>smart cities</em>, monitoreo ambiental y agro. En Cochabamba,
+                la Alcaldía ha desplegado sensores LoRa para humedad, temperatura y ruido; y universidades locales
+                desarrollan proyectos de meteorología, calidad de agua, telemetría en globos estratosféricos,
+                monitoreo de apiarios y rescate georreferenciado.
+              </p>
+              <p class="mb-3">
+                Pese a su potencial, faltan evaluaciones sistemáticas de <strong>cobertura, escalabilidad y desempeño</strong>
+                en escenarios urbanos complejos, lo que limita su adopción en iniciativas de mayor impacto.
+              </p>
+
+              <h3 class="h6 text-muted mb-2">Normativas y estándares aplicables</h3>
+              <p class="mb-0">
+                En Bolivia, la banda <strong>915–928 MHz</strong> está habilitada para IoT (uso libre, sin exclusividad ni
+                protección contra interferencias). La <strong>UIT</strong> y la <strong>LoRa Alliance</strong> proveen lineamientos
+                y estándares técnicos de interoperabilidad; además, deben considerarse directrices sobre
+                <strong>seguridad y privacidad</strong> de datos en IoT.
+              </p>
+            </div>
+          </article>
+
+          <!-- Navegación inferior -->
+          <div class="d-flex justify-content-between align-items-center mt-4">
+            <a class="btn btn-outline-primary rounded-3" href="#top"><i class="fa-solid fa-arrow-up-long me-2"></i>Volver arriba</a>
+            <div class="d-flex gap-2">
+              <a class="btn btn-light border rounded-3" href="/documentacion/funcionamiento">
+                Funcionamiento <i class="fa-solid fa-arrow-right-long ms-2"></i>
+              </a>
+            </div>
+          </div>
+        </section>
+
+        <!-- Índice lateral -->
+        <aside class="col-12 col-lg-4">
+          <div class="card sticky-top shadow-sm border-0 rounded-4 overflow-hidden aside-sticky" style="top: 88px;">
+            <div id="introCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-touch="true" data-bs-interval="4500" data-bs-pause="hover">
+              <!-- Indicadores -->
+              <div class="carousel-indicators">
+                <button type="button" data-bs-target="#introCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+                <button type="button" data-bs-target="#introCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+                <button type="button" data-bs-target="#introCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
+              </div>
+
+              <!-- Slides -->
+              <div class="carousel-inner">
+                <!-- Slide 1 -->
+                <div class="carousel-item active">
+                  <img
+                    src="/img/intro/AP_TITU.drawio (6).png"
+                    class="d-block w-100 object-cover cursor-zoom"
+                    alt="Sonda LoRa en campo"
+                    data-full="/img/intro/AP_TITU.drawio (6).png"
+                    data-caption="Mediciones reales: sondas con LoRa + GPS + LTE recolectan datos para mapear cobertura y calidad."
+                  />
+                  <div class="carousel-caption d-none d-md-block bg-black bg-opacity-50 rounded-3 p-3">
+                    <h5 class="mb-1">Mediciones reales</h5>
+                    <p class="mb-0 small">Sondas con LoRa + GPS + LTE recolectan datos para mapear cobertura y calidad.</p>
+                  </div>
+                </div>
+
+                <!-- Slide 2 -->
+                <div class="carousel-item">
+                  <img
+                    src="/img/intro/DiagramaFuncional.drawio (2).png"
+                    class="d-block w-100 object-cover cursor-zoom"
+                    alt="Mapa de calor GIS"
+                    data-full="/img/intro/DiagramaFuncional.drawio (2).png"
+                    data-caption="Visualización GIS: mapas de calor y capas temáticas para decisiones rápidas."
+                  />
+                  <div class="carousel-caption d-none d-md-block bg-black bg-opacity-50 rounded-3 p-3">
+                    <h5 class="mb-1">Visualización GIS</h5>
+                    <p class="mb-0 small">Mapas de calor y capas temáticas para decisiones rápidas y comparables.</p>
+                  </div>
+                </div>
+
+                <!-- Slide 3 -->
+                <div class="carousel-item">
+                  <img
+                    src="/img/intro/urban-cochabamba.jpg"
+                    class="d-block w-100 object-cover cursor-zoom"
+                    alt="Entorno urbano Cochabamba"
+                    data-full="/img/intro/urban-cochabamba.jpg"
+                    data-caption="Enfoque local: optimización de redes en escenarios urbanos reales de Cochabamba."
+                  />
+                  <div class="carousel-caption d-none d-md-block bg-black bg-opacity-50 rounded-3 p-3">
+                    <h5 class="mb-1">Enfoque local</h5>
+                    <p class="mb-0 small">Optimización de redes en escenarios urbanos reales de Cochabamba.</p>
+                  </div>
+                </div>
+              </div>
+              <!-- Sin flechas -->
+            </div>
+          </div>
+        </aside>
+
+      </div>
+    </main>
+    <!-- Modal Lightbox -->
+    <div class="modal fade" id="imgLightbox" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content bg-dark text-white border-0">
+          <div class="modal-header border-0">
+            <h5 class="modal-title" id="imgLightboxTitle">Vista previa</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+          </div>
+          <div class="modal-body p-0">
+            <img id="imgLightboxSrc" src="" alt="" class="w-100" style="max-height:80vh; object-fit:contain;" />
+          </div>
+          <div class="modal-footer border-0">
+            <small id="imgLightboxCaption" class="text-secondary-emphasis text-white-50"></small>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <Footer />
+    <!-- Bootstrap JS -->
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+      crossorigin="anonymous">
+    </script>
+
+    <!-- Tu script del lightbox (separado) -->
+    <script>
+      (function () {
+        const carousel = document.getElementById('introCarousel');
+        if (!carousel) return;
+
+        const modalEl = document.getElementById('imgLightbox');
+        const modalImg = document.getElementById('imgLightboxSrc');
+        const modalTitle = document.getElementById('imgLightboxTitle');
+        const modalCaption = document.getElementById('imgLightboxCaption');
+
+        carousel.addEventListener('click', function (e) {
+          const target = e.target.closest('img[data-full]');
+          if (!target) return;
+
+          const full = target.getAttribute('data-full') || target.src;
+          const caption = target.getAttribute('data-caption') || target.alt || 'Imagen';
+          const title = target.alt || 'Vista previa';
+
+          modalImg.src = full;
+          modalTitle.textContent = title;
+          modalCaption.textContent = caption;
+
+          const modal = new bootstrap.Modal(modalEl, { backdrop: true, keyboard: true, focus: true });
+          modal.show();
+        }, false);
+      })();
+    </script>
+
+  </body>
+</html>
+
+<style>
+  :root {
+    --fluent-bg: #f5f7fb;
+    --fluent-card: #ffffff;
+    --fluent-radius: 1rem;      /* ≈ rounded-4 */
+    --fluent-shadow: 0 1px 2px rgba(0,0,0,.04), 0 8px 24px rgba(0,0,0,.06);
+  }
+
+  body { font-family: 'Geist', system-ui, -apple-system, Segoe UI, Roboto, 'Helvetica Neue', Arial, 'Noto Sans', 'Liberation Sans', sans-serif; }
+
+  .card {
+    background: var(--fluent-card);
+    border-radius: var(--fluent-radius);
+    box-shadow: var(--fluent-shadow);
+  }
+
+  .alert {
+    border: 1px solid rgba(13,110,253,.15);
+  }
+
+  /* Mejora de foco accesible en enlaces del índice */
+  .nav-link:focus {
+    outline: 3px solid rgba(13,110,253,.25);
+    outline-offset: 2px;
+    border-radius: .5rem;
+  }
+
+  /* Espaciados fluidos */
+  @media (min-width: 992px) {
+    header .badge { transform: translateY(2px); }
+  }
+
+  /* Ajustes del sticky de la sidebar para no tapar el navbar */
+  @media (max-width: 991.98px) {
+    .sticky-top { position: static !important; }
+  }
+
+  /* Suaviza anclas al navegar */
+  html { scroll-behavior: smooth; }
+  /* Mantener proporción agradable en el carrusel de la sidebar */
+
+  .object-cover {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* En móviles, el sticky no aplica (ya lo tienes así) */
+  @media (max-width: 991.98px) {
+    .sticky-top { position: static !important; }
+  }
+  /* Evitar superposición del carrusel sobre los dropdowns del navbar */
+  .aside-sticky { z-index: 0; }                 /* Hace que el aside no tape */
+  .navbar, .dropdown-menu { z-index: 2000; }    /* Los menús quedan por encima */
+
+  /* Proporción del carrusel y recorte de imagen */
+  #introCarousel .carousel-item { aspect-ratio: 5 / 4; }
+  .object-cover { width: 100%; height: 100%; object-fit: cover; }
+
+  /* Cursor de zoom para indicar que se puede ampliar */
+  .cursor-zoom { cursor: zoom-in; }
+
+  /* En móviles, desactivar sticky para evitar solapamientos */
+  @media (max-width: 991.98px) {
+    .sticky-top { position: static !important; }
+  }
+
+</style>

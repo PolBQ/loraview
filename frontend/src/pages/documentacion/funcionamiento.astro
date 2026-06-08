@@ -1,0 +1,573 @@
+---
+import Navbar from "../../components/menu.astro";
+import Footer from "../../components/ppagina.astro";
+import "../../styles.css";
+// React islands
+import WaveIntro from "../../components/animWave.jsx";
+import AirBasics from "../../components/animAirBasics.jsx";
+import LinkPlay from "../../components/animLinkPlay.jsx";
+
+import CoverageSimulatorMini from "../../components/anim4.jsx";
+import TrackReplay from "../../components/anim5.jsx";
+import CompareCard from "../../components/anim6.jsx";
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Funcionamiento • LoRaVIEW / LoRaTRACK</title>
+
+    <!-- Bootstrap (ya lo usas en el proyecto) -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      crossorigin="anonymous"
+    />
+
+    <!-- Tipografía y estilo coherente (Fluent-like) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet" />
+
+    <style>
+      html,body{ background:var(--bg); color:var(--ink); }
+      .section{ padding: clamp(28px, 4vw, 72px) 0; }
+      .title-grad{ background:linear-gradient(90deg,var(--accent),var(--accent2)); -webkit-background-clip:text; background-clip:text; color:transparent; }
+      .card-fluent{
+        background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+        border:1px solid rgba(255,255,255,.08); border-radius:16px; backdrop-filter: blur(6px);
+        box-shadow: 0 10px 30px rgba(0,0,0,.25);
+      }
+      .chip{ display:inline-flex; gap:.5rem; align-items:center; padding:.28rem .7rem;
+             border-radius:999px; border:1px solid rgba(255,255,255,.12); color:var(--muted); }
+      .divider{ height:1px; background:linear-gradient(90deg,transparent,rgba(255,255,255,.12),transparent); }
+
+      /* Grid helpers */
+      .grid{ display:grid; gap:1rem; }
+      @media(min-width:992px){ .grid-2{ grid-template-columns:1.1fr .9fr; } .grid-3{ grid-template-columns:repeat(3,1fr); } }
+
+      /* On-scroll animation (sin librerías) */
+      .reveal{ opacity:0; transform: translateY(14px); transition: opacity .6s ease, transform .6s ease; }
+      .reveal.in{ opacity:1; transform:none; }
+      .fade-in-up{ opacity:0; transform: translateY(10px); animation: fin .7s ease forwards; }
+      @keyframes fin{ to { opacity:1; transform:none; } }
+
+      /* Mini barra y kpis */
+      .kpi{ font-weight:800; font-size: clamp(26px, 3.2vw, 40px); line-height:1; }
+      .bar-bg{ height:10px; border-radius:10px; background:rgba(255,255,255,.08); overflow:hidden; }
+      .bar-fill{ height:10px; border-radius:10px; background:var(--accent); width:0%; transition:width .4s ease; }
+
+      /* SVG helpers */
+      .soft-shadow{ filter: drop-shadow(0 6px 18px rgba(0,0,0,.35)); }
+
+      /* Links discretos */
+      a.btn-soft{ border-radius:12px; border:1px solid rgba(255,255,255,.1); padding:.7rem 1rem; color:var(--ink); text-decoration:none; }
+      a.btn-soft:hover{ border-color: rgba(255,255,255,.28); }
+    </style>
+  </head>
+
+  <body>
+    <Navbar />
+
+    <main class="container">
+      <section class="section" style="padding-top: 5rem;">
+        <div class="container">
+          <div class="card-fluent p-4 mb-3">
+            <WaveIntro client:load />
+          </div>
+          <div class="grid grid-2">
+            <div class="reveal" data-reveal>
+              <AirBasics client:visible />
+            </div>
+            <div class="reveal" data-reveal>
+              <LinkPlay client:visible />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="divider"></div>
+
+      <!-- HERO: narrativa -->
+      <section class="section text-center" style="padding-top: 5rem;">
+        <div class="chip">Funcionamiento</div>
+        <h1 class="mt-3 title-grad">De la transmisión a la decisión</h1>
+        <p class="mt-2" style="color:var(--muted)">
+          Entiende cómo viaja la señal, cómo la calculamos y medimos, y cómo predecimos su comportamiento para
+          comparar <b>Simulado</b> vs <b>Real</b> con <span class="title-grad" style="color:inherit">LoRaVIEW</span> y <span class="title-grad" style="color:inherit">LoRaTRACK</span>.
+        </p>
+      </section>
+
+      <div class="divider"></div>
+
+      <!-- 1) Transmisión inalámbrica (ondas + obstáculos) -->
+      <section class="section grid grid-2 align-items-center">
+        <div class="card-fluent p-4 reveal" data-reveal>
+          <h2 class="title-grad">1) ¿Cómo viaja la señal?</h2>
+          <p style="color:var(--muted)">La potencia disminuye con la distancia y con los obstáculos.
+            Mueve los controles y observa cómo cambia el “alcance visual”.</p>
+
+          <div class="row g-3">
+            <div class="col-12 col-lg-6">
+              <label class="form-label" style="color:var(--muted)">Distancia (km): <span id="d-val">1.0</span></label>
+              <input id="d-range" type="range" min="0.1" max="10" step="0.1" value="1.0" class="form-range" />
+              <label class="form-label mt-3" style="color:var(--muted)">Entorno</label>
+              <select id="env" class="form-select form-select-sm bg-transparent" style="border-color:rgba(255,255,255,.2)">
+                <option value="1">Abierto</option>
+                <option value="1.25">Con árboles</option>
+                <option value="1.6" selected>Urbano</option>
+                <option value="2.0">Urbano denso</option>
+              </select>
+              <small class="d-block mt-2" style="color:var(--muted)">Valores típicos de RSSI: –40 dBm (muy cerca) → –120 dBm (límite).</small>
+            </div>
+
+            <div class="col-12 col-lg-6 text-center">
+              <!-- Ondas ilustrativas con arcos concéntricos -->
+              <svg id="wave-svg" viewBox="0 0 320 220" width="100%" class="soft-shadow">
+                <!-- Suelo (ligero) -->
+                <rect x="0" y="170" width="320" height="50" fill="rgba(255,255,255,.03)"></rect>
+
+                <!-- Antena Tx (omni) -->
+                <g>
+                  <rect x="58" y="120" width="4" height="50" fill="#fff"></rect>
+                  <circle cx="60" cy="118" r="8"  fill="none" stroke="#fff" stroke-width="1" opacity=".65"></circle>
+                  <circle cx="60" cy="118" r="12" fill="none" stroke="#fff" stroke-width="1" opacity=".45"></circle>
+                  <rect x="52" y="168" width="16" height="6" rx="2" fill="#fff" opacity=".85"></rect>
+                </g>
+
+                <!-- Grupo de ondas (arcos “) ) ) )” izq→der) -->
+                <g id="waves2-group"></g>
+
+                <!-- Obstáculos según entorno -->
+                <g id="obs-group" opacity=".55"></g>
+
+                <!-- Receptor (se mueve según distancia) -->
+                <circle id="rx-dot" cx="280" cy="118" r="5" fill="#fff"></circle>
+              </svg>
+
+              <div class="mt-2" style="color:var(--muted)">
+                RSSI estimado:
+                <b id="rssi-label" style="color:var(--ink)">-90 dBm</b>
+              </div>
+              <div class="bar-bg mt-1"><div id="rssi-bar" class="bar-fill"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-fluent p-4 reveal" data-reveal>
+          <h3 class="title-grad">2) ¿Cómo lo calculamos?</h3>
+          <p style="color:var(--muted)">
+            Combinamos la pérdida en el espacio libre con penalizaciones por entorno para estimar la potencia recibida.
+            <span title="FSPL dB = 32.44 + 20·log10(f_MHz) + 20·log10(d_km)">FSPL</span> + entorno → <b>RSSI</b>.
+          </p>
+
+          <div class="row g-3">
+            <div class="col-12 col-md-6">
+              <label class="form-label" style="color:var(--muted)">Frecuencia (MHz): <span id="f-val">915</span></label>
+              <input id="f-range" type="range" min="433" max="928" step="1" value="915" class="form-range" />
+              <label class="form-label mt-3" style="color:var(--muted)">Potencia Tx (dBm): <span id="ptx-val">14</span></label>
+              <input id="ptx-range" type="range" min="2" max="22" step="1" value="14" class="form-range" />
+            </div>
+            <div class="col-12 col-md-6">
+              <div class="card-fluent p-3">
+                <div style="color:var(--muted)">Resultado instantáneo</div>
+                <div class="kpi"><span id="fspl-val">106</span> dB</div>
+                <small style="color:var(--muted)">Pérdida libre (aprox.)</small>
+                <div class="mt-3">
+                  <div style="color:var(--muted)">RSSI estimado</div>
+                  <div class="kpi" id="rssi-kpi">-90 dBm</div>
+                  <small style="color:var(--muted)">Incluye penalización de entorno</small>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <small class="d-block mt-2" style="color:var(--muted)">
+            Nota: este cálculo es ilustrativo para la página. En LoRaVIEW usamos modelos como Okumura-Hata y ajustes por entorno.
+          </small>
+        </div>
+      </section>
+
+      <div class="divider"></div>
+
+      <!-- 3) Cómo capturamos datos -->
+      <section class="section grid grid-2 align-items-center">
+        <div class="card-fluent p-4 reveal" data-reveal>
+          <h2 class="title-grad">3) ¿Qué capturamos en campo?</h2>
+          <p style="color:var(--muted)">Con LoRaTRACK registramos muestras georreferenciadas para validar la red.</p>
+
+          <div class="grid grid-3 mt-3">
+            <div class="card-fluent p-3">
+              <div class="chip">Señal</div>
+              <h6 class="mt-2">RSSI & SNR</h6>
+              <small style="color:var(--muted)">Fuerza y calidad de la señal en dBm y dB.</small>
+            </div>
+            <div class="card-fluent p-3">
+              <div class="chip">Ubicación</div>
+              <h6 class="mt-2">GPS (Lat/Lon/Alt)</h6>
+              <small style="color:var(--muted)">Dónde se midió cada muestra.</small>
+            </div>
+            <div class="card-fluent p-3">
+              <div class="chip">Radio</div>
+              <h6 class="mt-2">SF / BW / CR</h6>
+              <small style="color:var(--muted)">Parámetros de transmisión.</small>
+            </div>
+          </div>
+
+          <p class="mt-3" style="color:var(--muted)">
+            Opcionalmente capturamos velocidad/rumbo y <i>device id</i>. Los datos se suben por LTE o se guardan en microSD para sincronizar luego.
+          </p>
+        </div>
+
+        <!-- “Animación” liviana de puntos en trayecto -->
+        <div class="card-fluent p-4 reveal text-center" data-reveal>
+          <h3 class="title-grad">Trayecto de medición (demo)</h3>
+          <svg id="track-svg" viewBox="0 0 320 140" width="100%" class="soft-shadow" style="margin-top:.5rem">
+            <polyline id="track-line" points="10,110 60,90 110,75 160,68 210,72 260,92 310,110"
+              fill="none" stroke="rgba(255,255,255,.2)" stroke-width="2"></polyline>
+          </svg>
+          <button id="track-btn" class="btn btn-sm btn-light mt-2">Reproducir</button>
+          <div class="mt-2" style="color:var(--muted)">Muestra actual: <b id="sample-rssi">—</b></div>
+        </div>
+      </section>
+
+      <div class="divider"></div>
+
+      <!-- 4) Cómo predecimos (mini-sim) -->
+      <section class="section grid grid-2 align-items-center">
+        <div class="card-fluent p-4 reveal" data-reveal>
+          <h2 class="title-grad">4) ¿Cómo predecimos la cobertura?</h2>
+          <p style="color:var(--muted)">
+            En LoRaVIEW simulamos mapas de cobertura. Aquí verás una versión compacta:
+            sube la antena o la potencia y observa cómo crece la zona “usable”.
+          </p>
+
+          <div class="row g-3">
+            <div class="col-12 col-md-6">
+              <label class="form-label" style="color:var(--muted)">Altura antena (m): <span id="h-val">15</span></label>
+              <input id="h-range" type="range" min="5" max="40" step="1" value="15" class="form-range" />
+              <label class="form-label mt-3" style="color:var(--muted)">Potencia Tx (dBm): <span id="p-val">14</span></label>
+              <input id="p-range" type="range" min="2" max="22" step="1" value="14" class="form-range" />
+              <label class="form-label mt-3" style="color:var(--muted)">Entorno (1=abierto,5=denso): <span id="e-val">3</span></label>
+              <input id="e-range" type="range" min="1" max="5" step="1" value="3" class="form-range" />
+            </div>
+            <div class="col-12 col-md-6 text-center">
+              <svg id="rings" viewBox="0 0 320 320" width="100%" class="soft-shadow">
+                <defs>
+                  <radialGradient id="g1"><stop offset="0%" stop-color="var(--ring1)"/><stop offset="100%" stop-color="transparent"/></radialGradient>
+                  <radialGradient id="g2"><stop offset="0%" stop-color="var(--ring2)"/><stop offset="100%" stop-color="transparent"/></radialGradient>
+                  <radialGradient id="g3"><stop offset="0%" stop-color="var(--ring3)"/><stop offset="100%" stop-color="transparent"/></radialGradient>
+                </defs>
+                <circle id="weak"   cx="160" cy="160" r="110" fill="url(#g3)"></circle>
+                <circle id="usable" cx="160" cy="160" r="80"  fill="url(#g2)"></circle>
+                <circle id="strong" cx="160" cy="160" r="50"  fill="url(#g1)"></circle>
+                <circle cx="160" cy="160" r="6" fill="#fff"></circle>
+                <text x="160" y="305" text-anchor="middle" fill="var(--muted)" font-size="12">Cobertura: fuerte / usable / débil</text>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- 5) Comparar Sim vs Real -->
+        <div class="card-fluent p-4 reveal" data-reveal>
+          <h3 class="title-grad">5) ¿Cómo comparamos con los datos reales?</h3>
+          <p style="color:var(--muted)">
+            Superponemos el mapa simulado con las mediciones reales y calculamos la diferencia media.
+            Si la diferencia baja (por ejemplo ≤ <b>±5 dB</b>), el modelo está bien ajustado.
+          </p>
+
+          <div class="row g-3">
+            <div class="col-12">
+              <div class="bar-bg"><div id="delta-bar" class="bar-fill" style="background:var(--accent2)"></div></div>
+              <small class="d-block mt-1" style="color:var(--muted)">Δ promedio (Sim − Real): <b id="delta-val">—</b></small>
+            </div>
+            <div class="col-12 grid grid-3">
+              <div>
+                <div class="kpi" id="kpi-mae">—</div>
+                <small style="color:var(--muted)">MAE (dB)</small>
+              </div>
+              <div>
+                <div class="kpi" id="kpi-pct">—%</div>
+                <small style="color:var(--muted)">% dentro de ±5 dB</small>
+              </div>
+              <div>
+                <div class="kpi" id="kpi-range">— km</div>
+                <small style="color:var(--muted)">Alcance estable</small>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-3">
+            <a href="#top" class="btn-soft me-2">Volver arriba</a>
+            <a href="/documentacion" class="btn-soft">Aprender más</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="section text-center">
+        <p class="fade-in-up" style="color:var(--muted)">
+          En la plataforma completa verás esta lógica aplicada sobre mapas reales (Leaflet) con tus datos.
+        </p>
+      </section>
+    </main>
+
+    <Footer />
+
+    <!-- Bootstrap JS -->
+    <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Interactividad ligera y animaciones on-scroll -->
+    <script>
+      // IntersectionObserver para .reveal
+      const io = new IntersectionObserver(entries => {
+        entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
+      }, { threshold: 0.15 });
+      document.querySelectorAll('[data-reveal]').forEach(el => io.observe(el));
+
+      // Utilidades numéricas
+      const log10 = (x) => Math.log(x) / Math.log(10);
+
+      // Controles sección 1 + 2
+      const dRange = document.getElementById('d-range');
+      const dVal   = document.getElementById('d-val');
+      const envSel = document.getElementById('env');
+      const fRange = document.getElementById('f-range');
+      const fVal   = document.getElementById('f-val');
+      const ptxR   = document.getElementById('ptx-range');
+      const ptxVal = document.getElementById('ptx-val');
+      const fsplVal= document.getElementById('fspl-val');
+      const rssiKpi= document.getElementById('rssi-kpi');
+      const rssiLbl= document.getElementById('rssi-label');
+      const rssiBar= document.getElementById('rssi-bar');
+
+      // ==== NUEVO: helpers y refs para ondas ilustrativas ====
+      const waveSvg  = document.getElementById('wave-svg');
+      const wavesGrp = document.getElementById('waves2-group');
+      const obsGrp   = document.getElementById('obs-group');
+      const rxDot    = document.getElementById('rx-dot');
+
+      const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
+      const arcPath = (cx, cy, r, a0, a1) => {
+        const x0 = cx + r * Math.cos(a0), y0 = cy + r * Math.sin(a0);
+        const x1 = cx + r * Math.cos(a1), y1 = cy + r * Math.sin(a1);
+        const large = Math.abs(a1 - a0) > Math.PI ? 1 : 0, sweep = 1;
+        return `M ${x0},${y0} A ${r} ${r} 0 ${large} ${sweep} ${x1} ${y1}`;
+      };
+
+      // Estado de animación
+      let phase2 = 0;
+      const wavesParams = { maxReach: 140, spread: 65, cx: 60, cy: 118 };
+
+      function rebuildObstacles() {
+        if (!obsGrp) return;
+        obsGrp.innerHTML = '';
+        const env = parseFloat(envSel.value); // 1..2
+        const n = Math.round(2 + (env - 1) * 16); // más entorno ⇒ más obstáculos
+        for (let i = 0; i < n; i++) {
+          const x = 120 + Math.random() * 170;
+          const isTree = Math.random() < 0.5;
+          if (isTree) {
+            const h = 14 + Math.random() * 28;
+            const g = document.createElementNS('http://www.w3.org/2000/svg','g');
+            g.setAttribute('transform', `translate(${x} 170)`);
+            const tronco = document.createElementNS('http://www.w3.org/2000/svg','rect');
+            tronco.setAttribute('x','-1.5'); tronco.setAttribute('y', -h);
+            tronco.setAttribute('width','3'); tronco.setAttribute('height', h);
+            tronco.setAttribute('fill','rgba(255,255,255,.55)');
+            const copa = document.createElementNS('http://www.w3.org/2000/svg','polygon');
+            copa.setAttribute('points', `-8,${-h} 0,${-h-10} 8,${-h}`);
+            copa.setAttribute('fill','rgba(255,255,255,.35)');
+            g.appendChild(tronco); g.appendChild(copa); obsGrp.appendChild(g);
+          } else {
+            const h = 20 + Math.random() * 60;
+            const b = document.createElementNS('http://www.w3.org/2000/svg','rect');
+            b.setAttribute('x', x - 5); b.setAttribute('y', 170 - h);
+            b.setAttribute('width','10'); b.setAttribute('height', h);
+            b.setAttribute('rx','2'); b.setAttribute('fill','rgba(255,255,255,.6)');
+            obsGrp.appendChild(b);
+          }
+        }
+      }
+
+
+      function recomputeLink(){
+        const d = parseFloat(dRange.value);     // km
+        const env = parseFloat(envSel.value);   // penalización
+        const f = parseFloat(fRange.value);     // MHz
+        const ptx = parseFloat(ptxR.value);     // dBm
+
+        dVal.textContent = d.toFixed(1);
+        fVal.textContent = f.toFixed(0);
+        ptxVal.textContent = ptx.toFixed(0);
+
+        // FSPL (aprox) en dB
+        const fspl = 32.44 + 20*log10(f) + 20*log10(d);
+        fsplVal.textContent = Math.round(fspl);
+
+        // Modelo ilustrativo: RSSI = Ptx - FSPL*factor + offset
+        const offset = -8; // pérdidas varias ilustrativas
+        let rssi = ptx + offset - fspl*env/1.8;
+        rssi = Math.max(-125, Math.min(-35, Math.round(rssi)));
+
+        rssiLbl.textContent = rssi + " dBm";
+        rssiKpi.textContent = rssi + " dBm";
+
+        const pct = Math.min(100, Math.max(0, (rssi + 125) / 90 * 100));
+        rssiBar.style.width = pct + "%";
+        rssiBar.style.background = rssi > -80 ? "var(--ok)" : rssi > -100 ? "var(--warn)" : "var(--bad)";
+
+        // ===== NUEVO: ondas tipo arcos y alcance ilustrativo =====
+        const fPow = 1 + 0.06 * (ptx - 14);                 // potencia ↑ ⇒ alcance ↑
+        const fEnv = 1 - 0.45 * (env - 1);                   // entorno ↑ ⇒ alcance ↓
+        const fFreq = 1 - 0.10 * ((f - 433) / (928 - 433));  // frecuencia ↑ ⇒ leve ↓
+
+        wavesParams.maxReach = clamp(140 * fPow * fEnv * fFreq, 60, 170);
+        wavesParams.spread   = 65; // apertura de los arcos
+
+        // Recolocar Rx según la distancia elegida (visual)
+        const rxX = 90 + ((d - 0.1) / (10 - 0.1)) * 200;     // 90..290 aprox
+        rxDot.setAttribute('cx', rxX);
+
+        // Actualiza ondas (radio)
+        const r1 = document.getElementById('r1');
+        const r2 = document.getElementById('r2');
+        const r3 = document.getElementById('r3');
+        const base = 30 + (ptx-10)*2; // px
+        const penal = 1 - (env-1)*0.18;
+        r1.setAttribute('r', Math.max(20, base*penal*1.2));
+        r2.setAttribute('r', Math.max(40, base*penal*2.2));
+        r3.setAttribute('r', Math.max(60, base*penal*3.2));
+
+      }
+      function animateWaves(){
+        if (!wavesGrp) return;
+        phase2 = (phase2 + 0.8) % 1000; // velocidad constante
+        wavesGrp.innerHTML = '';
+
+        const { cx, cy, maxReach, spread } = wavesParams;
+        const a0 = (-spread * Math.PI)/180, a1 = (spread * Math.PI)/180;
+        const spacing = 16, baseR = 18, count = 25;
+        const offset = (phase2 % spacing + spacing) % spacing;
+
+        for(let k=0; k<count; k++){
+          const r = baseR + k*spacing + offset;
+          if (r > maxReach) continue;
+
+          const edge = clamp((maxReach - r) / (maxReach * 0.6), 0, 1);
+          const sw = 1.6 * (1 - k*0.06) * (0.6 + 0.4*edge);
+          const op = (0.9 - k*0.07) * (0.5 + 0.5*edge);
+
+          const p = document.createElementNS('http://www.w3.org/2000/svg','path');
+          p.setAttribute('d', arcPath(cx, cy, r, a0, a1));
+          p.setAttribute('fill','none');
+          p.setAttribute('stroke','var(--accent)');
+          p.setAttribute('stroke-linecap','round');
+          p.setAttribute('stroke-width', String(clamp(sw, .6, 2.6)));
+          p.setAttribute('opacity', String(clamp(op, .12, 1)));
+          wavesGrp.appendChild(p);
+        }
+        requestAnimationFrame(animateWaves);
+      }
+      rebuildObstacles();   // generar obstáculos iniciales
+      animateWaves();       // arrancar animación
+
+      dRange.addEventListener('input', recomputeLink);
+      envSel.addEventListener('change', recomputeLink);
+      fRange.addEventListener('input', recomputeLink);
+      ptxR.addEventListener('input', recomputeLink);
+      envSel.addEventListener('change', ()=>{ rebuildObstacles(); recomputeLink(); });
+
+      recomputeLink();
+
+      // Trayecto de medición (puntos que aparecen)
+      const pathPts = [
+        {x:10,y:110,rssi:-70},{x:60,y:90,rssi:-78},{x:110,y:75,rssi:-85},
+        {x:160,y:68,rssi:-92},{x:210,y:72,rssi:-95},{x:260,y:92,rssi:-88},{x:310,y:110,rssi:-75}
+      ];
+      const trackSvg = document.getElementById('track-svg');
+      const btn = document.getElementById('track-btn');
+      const sampleLbl = document.getElementById('sample-rssi');
+      let dots = [], idx = 0, timer;
+
+      function drawNext(){
+        if(idx >= pathPts.length){ clearInterval(timer); btn.disabled=false; return; }
+        const p = pathPts[idx++];
+        const c = document.createElementNS("http://www.w3.org/2000/svg","circle");
+        c.setAttribute("cx", p.x); c.setAttribute("cy", p.y); c.setAttribute("r","0");
+        const color = p.rssi>-80 ? "var(--ok)" : p.rssi>-95 ? "var(--warn)" : "var(--bad)";
+        c.setAttribute("fill", color);
+        trackSvg.appendChild(c);
+        dots.push(c);
+        // animación simple
+        requestAnimationFrame(()=>{ c.setAttribute("r","6"); });
+        sampleLbl.textContent = p.rssi + " dBm";
+        // actualizar KPIs de la sección 5 (demo)
+        updateCompareKPIs();
+      }
+
+      btn.addEventListener('click', ()=>{
+        // reset si ya fue ejecutado
+        dots.forEach(n=>n.remove()); dots=[]; idx=0; sampleLbl.textContent="—";
+        btn.disabled=true;
+        timer = setInterval(drawNext, 600);
+      });
+
+      // Mini-sim de cobertura (anillos)
+      const hR = document.getElementById('h-range');
+      const pR = document.getElementById('p-range');
+      const eR = document.getElementById('e-range');
+      const hVal = document.getElementById('h-val');
+      const pVal = document.getElementById('p-val');
+      const eVal = document.getElementById('e-val');
+      const strong = document.getElementById('strong');
+      const usable = document.getElementById('usable');
+      const weak   = document.getElementById('weak');
+
+      function updateRings(){
+        const h = parseInt(hR.value), p = parseInt(pR.value), e = parseInt(eR.value);
+        hVal.textContent = h; pVal.textContent = p; eVal.textContent = e;
+        const base = 110 + (p-14)*6 + (h-15)*1.1;
+        const factor = 1 - (e-1)*0.12;
+        strong.setAttribute('r', Math.max(35, base*factor*0.42));
+        usable.setAttribute('r', Math.max(60, base*factor*0.78));
+        weak.setAttribute('r',   Math.max(85, base*factor*1.08));
+        // actualizar resumen comparativo
+        updateCompareKPIs();
+      }
+      hR.addEventListener('input', updateRings);
+      pR.addEventListener('input', updateRings);
+      eR.addEventListener('input', updateRings);
+      updateRings();
+
+      // KPIs de comparación (demo)
+      const deltaBar = document.getElementById('delta-bar');
+      const deltaVal = document.getElementById('delta-val');
+      const kpiMAE = document.getElementById('kpi-mae');
+      const kpiPct = document.getElementById('kpi-pct');
+      const kpiRange = document.getElementById('kpi-range');
+
+      function updateCompareKPIs(){
+        // Cálculos ilustrativos: Δ depende de entorno y potencia
+        const env = parseFloat(envSel.value);
+        const d  = parseFloat(dRange.value);
+        const p  = parseFloat(pR.value);
+        const h  = parseFloat(hR.value);
+
+        // “Sim” mejorando con potencia/altura y “Real” afectado por entorno/distancia
+        let delta = (22 - p) * 0.3 + (1.8 - (1/Math.max(1, env))) * 2 - Math.log(1+d) * 1.2;
+        delta = Math.max(-12, Math.min(12, delta)); // ±12 dB
+        deltaVal.textContent = (delta>=0? "+" : "") + delta.toFixed(1) + " dB";
+        deltaBar.style.width = (Math.abs(delta)/12*100).toFixed(0) + "%";
+
+        const mae = (Math.abs(delta) + env*0.8 + (35-h)/30).toFixed(1);
+        const pct = Math.max(40, 100 - Math.abs(delta)*6 - (env-1)*8);
+        const rng = (1.2 + (p-10)*0.15 + (h-10)*0.05 - (env-1)*0.2).toFixed(1);
+
+        kpiMAE.textContent = mae;
+        kpiPct.textContent = Math.max(0, Math.min(100, Math.round(pct))) + "%";
+        kpiRange.textContent = Math.max(0.5, parseFloat(rng)) + " km";
+      }
+      updateCompareKPIs();
+    </script>
+  </body>
+</html>
