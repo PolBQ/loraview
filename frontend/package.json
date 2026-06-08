@@ -1,0 +1,20 @@
+{
+  "name": "c-users-pc-onedrive---universidad-privada-del-valle-iel-titulaci-n-codigo-web-loraview",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/preact": "^4.0.5",
+    "@astrojs/react": "^4.3.1",
+    "astro": "^5.4.2",
+    "framer-motion": "^12.23.12",
+    "preact": "^10.26.4",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1"
+  }
+}
